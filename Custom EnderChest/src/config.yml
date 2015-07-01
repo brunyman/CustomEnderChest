@@ -1,0 +1,65 @@
+# default config.yml for CustomEnderChest
+# config version 1.0
+
+#Database settings
+database:
+    #Type of database, Options: FlatFile or MySQL
+    typeOfDatabase: FlatFile
+    #MySQL database type connection details.
+    mysql:
+        host: 127.0.0.1
+        port: 3306
+        databaseName: 'mydatabase'
+        tableName: 'cec_enderchests'
+        user: 'admin'
+        password: 'cheesecake'
+        #This task will scan the mysql database for inactive players and remove them.
+        #The scanning takes place after server starts with a 2min delay. Runs on a async thread so server performance will not be affected.
+        removeOldUsers:
+            #Enable or disable mysql database maintenance. | (true or false)
+            enabled: false
+            #Inactivity in days. Default 60 days.
+            inactive: 60
+
+#Customize Ender Chest Title
+enderChestTitle:
+    #EnderChest folder name. Supports color and format codes.
+    #Minecraft Color and Format Codes: http://minecraft.gamepedia.com/Formatting_codes
+    #WARNING! Max size is 32 characters including color, format codes.
+    enderChestName: '&5&lEnderChest &7- %level'
+    
+    #The place holder  %player  will be replaced by player's name.
+    
+    #The  %level  place holder replace text below. So you can customize each enderchest title by enderchest size.
+    
+    #For 9 slots enderchest.
+    level0: '&dLevel 0'
+    #For 18 slots enderchest.
+    level1: '&dLevel 1'
+    #For 27 slots enderchest.
+    level2: '&dLevel 2'
+    #For 36 slots enderchest.
+    level3: '&5Level 3'
+    #For 45 slots enderchest.
+    level4: '&5Level 4'
+    #For 54 slots enderchest.
+    level5: '&5Level 5'
+
+#Chat messages. Supports color and format codes. 
+chatMessages:
+    #Chat messages prefix.
+    #To disable the prefix set it to '' ; Example: prefix: ''
+    prefix: '&5&l[CustomEC] '
+    
+    #Disable any chat message by setting it to '' | Example: noPermission: ''
+    #Chat messages.
+    noPermission: '&dYou do not have permission!'
+    openCmdUsage: '&dUsage example: &7/customec open John &dor &7/customec open f694517d-d6cf-32f1-972b-dfc677ceac45'
+    noEnderchest: '&dPlayer does not have and Ender Chest yet!'
+    openUuidFail: '&dPlayer does not have and Ender Chest or wrong UUID!'
+    openNameOffline: '&dPlayer offline or wrong UUID! Use: &7/customec open <playerUUID>'
+    deleteNameOffline: '&dPlayer offline or wrong UUID! Use: &7/customec delete <playerUUID>'
+    deleteCmdUsage: '&dUsage example: &7/customec delete John &dor &7/customec delete f694517d-d6cf-32f1-972b-dfc677ceac45'
+    delete: '&dPlayer enderchest data removed!'
+    reloadFail: '&dCould not load config! Check logs!'
+    reload: '&dConfiguration reloaded!'
