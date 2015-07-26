@@ -26,6 +26,8 @@ public class EnderChest extends JavaPlugin {
 	private EnderChestUtils enderchestUtils;
 	private MysqlSetup mysqlSetup;
 	private MysqlMaintenance mysqlMaintenance;
+	@SuppressWarnings("unused")
+	private boolean enabled = false;
 	
 	    //Loading plugin
 		public void onEnable() {
@@ -67,17 +69,19 @@ public class EnderChest extends JavaPlugin {
 	    	CommandHandler cH = new CommandHandler(this);
 	    	getCommand("customec").setExecutor(cH);
 	    	getCommand("customenderchest").setExecutor(cH);
-	    	
+	    	enabled = true;
 	    	log.info("CustomEnderChest has been successfully loaded!");
 		}
 		
 		//Disabling plugin
 		public void onDisable() {
-			if (this.isEnabled()) {
+			if (enabled = true) {
 				//Closing database connection
-				if (mysqlSetup.getConnection() != null) {
-					log.info("Closing MySQL connection...");
-					mysqlSetup.closeDatabase();
+				if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
+					if (mysqlSetup.getConnection() != null) {
+						log.info("Closing MySQL connection...");
+						mysqlSetup.closeDatabase();
+					}
 				}
 			}
 			log.info("CustomEnderChest has been disabled.");

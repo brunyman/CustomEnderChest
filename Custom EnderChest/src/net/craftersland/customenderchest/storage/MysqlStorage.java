@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -22,27 +21,12 @@ public class MysqlStorage implements StorageInterface {
 	
 	public MysqlStorage(EnderChest enderchest) {
 		this.enderchest = enderchest;
-		this.conn = enderchest.getMysqlSetup().getConnection();
 		
 	}
 	
 	@Override
 	public boolean hasDataFile(UUID player) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return false;
-			}
-		}
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
 	 
@@ -64,21 +48,7 @@ public class MysqlStorage implements StorageInterface {
 	
 	@Override
 	public boolean deleteDataFile(UUID player) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return false;
-			}
-		}
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
 	 
@@ -95,21 +65,7 @@ public class MysqlStorage implements StorageInterface {
 	}
 	
 	public boolean createAccount(UUID uuid, Player p) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return false;
-			}
-		}
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
 			 
@@ -132,25 +88,10 @@ public class MysqlStorage implements StorageInterface {
 	
 	@Override
 	public boolean saveEnderChest(UUID uuid, Player p, Inventory endInv) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return false;
-			}
-		}
 		if (!hasDataFile(uuid)) {
 			createAccount(uuid, p);
 		}
-		
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
         	
@@ -172,25 +113,10 @@ public class MysqlStorage implements StorageInterface {
 	
 	@Override
 	public boolean saveEnderChest(Player p, Inventory endInv) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return false;
-			}
-		}
 		if (!hasDataFile(p.getUniqueId())) {
 			createAccount(p.getUniqueId(), p);
 		}
-		
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
         	
@@ -212,25 +138,10 @@ public class MysqlStorage implements StorageInterface {
 	
 	@Override
 	public boolean loadEnderChest(UUID uuid, Inventory endInv) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return false;
-			}
-		}
 		if (!hasDataFile(uuid)) {
 			createAccount(uuid, null);
 		}
-		
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
 	 
@@ -260,25 +171,10 @@ public class MysqlStorage implements StorageInterface {
 	
 	@Override
 	public boolean loadEnderChest(Player p, Inventory endInv) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return false;
-			}
-		}
 		if (!hasDataFile(p.getUniqueId())) {
 			createAccount(p.getUniqueId(), p);
 		}
-		
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
 	 
@@ -310,25 +206,10 @@ public class MysqlStorage implements StorageInterface {
 	}
 	
 	public String loadName(UUID uuid) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return null;
-			}
-		}
 		if (!hasDataFile(uuid)) {
 			createAccount(uuid, null);
 		}
-		
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
 	 
@@ -348,25 +229,10 @@ public class MysqlStorage implements StorageInterface {
 	}
 	
 	public Integer loadSize(UUID uuid) {
-		if (conn == null) {
-			EnderChest.log.warning("Database connection lost!");
-			try {
-				Bukkit.getServer().getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
-					@Override
-					public void run() {
-						enderchest.getMysqlSetup().setupDatabase();
-					}
-				});
-			} catch (Exception e) {
-				EnderChest.log.severe("Database connection lost and could not re-establish the connection!");
-				e.printStackTrace();
-				return null;
-			}
-		}
 		if (!hasDataFile(uuid)) {
 			createAccount(uuid, null);
 		}
-		
+		conn = enderchest.getMysqlSetup().getConnection();
 		try {
 			tableName = enderchest.getConfigHandler().getString("database.mysql.tableName");
 	 
