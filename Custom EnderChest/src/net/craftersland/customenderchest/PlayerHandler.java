@@ -50,17 +50,27 @@ public class PlayerHandler implements Listener {
 		Player p = (Player)hE;
 		Inventory inv = e.getInventory();
 		
-		if (enderchest.admin.containsKey(inv.getTitle())) {
-			p.playSound(p.getLocation(), Sound.CHEST_CLOSE, 1, 1);
-			enderchest.getStorageInterface().saveEnderChest(enderchest.admin.get(inv.getTitle()), p, inv);
-			enderchest.admin.remove(inv.getTitle());
-			return;
+		try {
+			if (enderchest.admin.containsKey(inv.getTitle())) {
+				if (EnderChest.is19Server == true) {
+					p.playSound(p.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1.0F, 1.0F);
+				} else {
+					p.playSound(p.getLocation(), Sound.valueOf("CHEST_CLOSE"), 1.0F, 1.0F);
+				}
+				enderchest.getStorageInterface().saveEnderChest(enderchest.admin.get(inv.getTitle()), p, inv);
+				enderchest.admin.remove(inv.getTitle());
+			} else if (inv.getTitle().matches(enderchest.getEnderChestUtils().getTitle(p))) {
+				if (EnderChest.is19Server == true) {
+					p.playSound(p.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1.0F, 1.0F);
+				} else {
+					p.playSound(p.getLocation(), Sound.valueOf("CHEST_CLOSE"), 1.0F, 1.0F);
+				}
+				enderchest.getStorageInterface().saveEnderChest(p, inv);
+			}
+		} catch (Exception ex) {
+			EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
+			ex.printStackTrace();
 		}
-		if (!inv.getTitle().matches(enderchest.getEnderChestUtils().getTitle(p))) {
-			return;
-		}
-		p.playSound(p.getLocation(), Sound.CHEST_CLOSE, 1, 1);
-		enderchest.getStorageInterface().saveEnderChest(p, inv);
 	}
 	
 	//Opening the enderchest
@@ -72,7 +82,11 @@ public class PlayerHandler implements Listener {
 		//No enderchest permission
 		if (size == 0) {
 			enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
-			p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+			if (EnderChest.is19Server == true) {
+				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+			} else {
+				p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+			}
 			return;
 		}
 					
@@ -81,7 +95,11 @@ public class PlayerHandler implements Listener {
 		//Load enderchest inventory from data source
 		enderchest.getStorageInterface().loadEnderChest(p, inv);
 		//Open the enderchest inventory
-		p.playSound(p.getLocation(), Sound.CHEST_OPEN, 1, 1);
+		if (EnderChest.is19Server == true) {
+			p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
+		} else {
+			p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
+		}
 		p.openInventory(inv);
 	}
 

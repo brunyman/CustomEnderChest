@@ -43,22 +43,38 @@ private EnderChest enderchest;
 									int size = enderchest.getEnderChestUtils().getSize(p);
 									if (size == 0) {
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
-										p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+										if (EnderChest.is19Server == true) {
+											p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+										} else {
+											p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+										}
 										return false;
 									}
 									String enderChestTitle = enderchest.getEnderChestUtils().getTitle(p);
 									Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
 									enderchest.getStorageInterface().loadEnderChest(p, inv);
-									p.playSound(p.getLocation(), Sound.CHEST_OPEN, 1, 1);
+									if (EnderChest.is19Server == true) {
+										p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
+									} else {
+										p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
+									}
 									p.openInventory(inv);
 									return true;
 								}
 								if (p.hasPermission("CustomEnderChest.admin")) {
-									p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+									if (EnderChest.is19Server == true) {
+										p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+									} else {
+										p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+									}
 									enderchest.getConfigHandler().printMessage(p, "chatMessages.openCmdUsage");
 									return false;
 								}
-								p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+								if (EnderChest.is19Server == true) {
+									p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+								} else {
+									p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+								}
 								enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 								return false;
 							} else {
@@ -70,11 +86,19 @@ private EnderChest enderchest;
 						if (sender instanceof Player) {
 							p = (Player) sender;
 							if (p.hasPermission("CustomEnderChest.admin")) {
-								p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+								if (EnderChest.is19Server == true) {
+									p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+								} else {
+									p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+								}
 								enderchest.getConfigHandler().printMessage(p, "chatMessages.deleteCmdUsage");
 								return false;
 							}
-							p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+							if (EnderChest.is19Server == true) {
+								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+							} else {
+								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+							}
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -90,15 +114,27 @@ private EnderChest enderchest;
 									enderchest.getConfig().load(new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"config.yml"));
 								} catch (Exception e) {
 									enderchest.getConfigHandler().printMessage(p, "chatMessages.reloadFail");
-									p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+									if (EnderChest.is19Server == true) {
+										p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+									} else {
+										p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+									}
 									e.printStackTrace();
 									return false;
 								}
-								p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+								if (EnderChest.is19Server == true) {
+									p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+								} else {
+									p.playSound(p.getLocation(), Sound.valueOf("LEVEL_UP"), 1.0F, 1.0F);
+								}
 								enderchest.getConfigHandler().printMessage(p, "chatMessages.reload");
 								return true;
 							}
-							p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+							if (EnderChest.is19Server == true) {
+								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+							} else {
+								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+							}
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -132,7 +168,11 @@ private EnderChest enderchest;
 								if (target != null) {
 									if (target.isOnline()) {
 										if (!enderchest.getStorageInterface().hasDataFile(target.getUniqueId())) {
-											p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+											if (EnderChest.is19Server == true) {
+												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+											} else {
+												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+											}
 											enderchest.getConfigHandler().printMessage(p, "chatMessages.noEnderchest");
 											return false;
 										}
@@ -140,7 +180,11 @@ private EnderChest enderchest;
 										String enderChestTitle = enderchest.getEnderChestUtils().getCmdTitle(target);
 										Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
 										enderchest.getStorageInterface().loadEnderChest(target, inv);
-										p.playSound(p.getLocation(), Sound.CHEST_OPEN, 1, 1);
+										if (EnderChest.is19Server == true) {
+											p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
+										} else {
+											p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
+										}
 										p.openInventory(inv);
 										enderchest.admin.put(enderChestTitle, target.getUniqueId());
 										return true;
@@ -149,7 +193,11 @@ private EnderChest enderchest;
 								    	try {
 								    		UUID targetUUID = UUID.fromString(args[1]);
 									    	if (!enderchest.getStorageInterface().hasDataFile(targetUUID)) {
-												p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+									    		if (EnderChest.is19Server == true) {
+													p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+												} else {
+													p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+												}
 												enderchest.getConfigHandler().printMessage(p, "chatMessages.openUuidFail");
 												return false;
 											}
@@ -157,18 +205,30 @@ private EnderChest enderchest;
 											String enderChestTitle = enderchest.getEnderChestUtils().getCmdTitle(targetUUID);
 											Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
 											enderchest.getStorageInterface().loadEnderChest(targetUUID, inv);
-											p.playSound(p.getLocation(), Sound.CHEST_OPEN, 1, 1);
+											if (EnderChest.is19Server == true) {
+												p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
+											} else {
+												p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
+											}
 											p.openInventory(inv);
 											enderchest.admin.put(enderChestTitle, targetUUID);
 											return true;
 								    	} catch (Exception e) {
-								    		p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+								    		if (EnderChest.is19Server == true) {
+												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+											} else {
+												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+											}
 								    		enderchest.getConfigHandler().printMessage(p, "chatMessages.openNameOffline");
 								    		return false;
 								    	}
 								    }
 							}
-							p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+							if (EnderChest.is19Server == true) {
+								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+							} else {
+								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+							}
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -184,12 +244,20 @@ private EnderChest enderchest;
 								if (target != null) {
 									if (target.isOnline()) {
 										if (!enderchest.getStorageInterface().hasDataFile(target.getUniqueId())) {
-											p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+											if (EnderChest.is19Server == true) {
+												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+											} else {
+												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+											}
 											enderchest.getConfigHandler().printMessage(p, "chatMessages.noEnderchest");
 											return false;
 										}
 										enderchest.getStorageInterface().deleteDataFile(target.getUniqueId());
-										p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+										if (EnderChest.is19Server == true) {
+											p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+										} else {
+											p.playSound(p.getLocation(), Sound.valueOf("LEVEL_UP"), 1.0F, 1.0F);
+										}
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.delete");
 										return true;
 									}
@@ -197,23 +265,39 @@ private EnderChest enderchest;
 									try {
 										UUID targetUUID = UUID.fromString(args[1]);
 										if (!enderchest.getStorageInterface().hasDataFile(targetUUID)) {
-											p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+											if (EnderChest.is19Server == true) {
+												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+											} else {
+												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+											}
 											enderchest.getConfigHandler().printMessage(p, "chatMessages.openUuidFail");
 											return false;
 										}
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.delete");
 										enderchest.getStorageInterface().deleteDataFile(targetUUID);
-										p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+										if (EnderChest.is19Server == true) {
+											p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+										} else {
+											p.playSound(p.getLocation(), Sound.valueOf("LEVEL_UP"), 1.0F, 1.0F);
+										}
 										return true;
 									} catch (Exception e) {
-										p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+										if (EnderChest.is19Server == true) {
+											p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+										} else {
+											p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+										}
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.deleteNameOffline");
 							    		return false;
 									}
 								}
 
 							}
-							p.playSound(p.getLocation(), Sound.NOTE_PLING, 1.0F, 1.0F);
+							if (EnderChest.is19Server == true) {
+								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
+							} else {
+								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
+							}
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -259,7 +343,11 @@ private EnderChest enderchest;
 	}
 	
 	public void sendHelp(Player p) {
-		p.playSound(p.getLocation(), Sound.ANVIL_LAND, 1, 1);
+		if (EnderChest.is19Server == true) {
+			p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0F, 1.0F);
+		} else {
+			p.playSound(p.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0F, 1.0F);
+		}
 		p.sendMessage(" ");
 		p.sendMessage(ChatColor.DARK_PURPLE + "-=-=-=-=-=-=-=-< " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "CustomEnderChest" + ChatColor.DARK_PURPLE + " >-=-=-=-=-=-=-=-=-");
 		if (p.hasPermission("CustomEnderChest.admin")) {
