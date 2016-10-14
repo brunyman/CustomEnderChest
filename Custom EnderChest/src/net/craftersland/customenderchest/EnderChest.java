@@ -26,6 +26,7 @@ public class EnderChest extends JavaPlugin {
 	private static StorageInterface storageInterface;
 	private static EnderChestUtils enderchestUtils;
 	private static MysqlSetup mysqlSetup;
+	private static SoundHandler sH;
 	
 		public void onEnable() {
 			log = getLogger();
@@ -40,6 +41,7 @@ public class EnderChest extends JavaPlugin {
 	        	log.info("Using FlatFile system for data.");
 		      	storageInterface = new FlatFileStorage(this);	
 	        }
+	        sH = new SoundHandler(this);
 	    	PluginManager pm = getServer().getPluginManager();
 	    	pm.registerEvents(new PlayerHandler(this), this);
 	    	CommandHandler cH = new CommandHandler(this);
@@ -80,6 +82,9 @@ public class EnderChest extends JavaPlugin {
 		}
 		public MysqlSetup getMysqlSetup() {
 			return mysqlSetup;
+		}
+		public SoundHandler getSoundHandler() {
+			return sH;
 		}
 
 }

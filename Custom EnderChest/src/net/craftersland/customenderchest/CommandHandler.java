@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,7 +23,7 @@ private EnderChest enderchest;
 	public boolean onCommand(final CommandSender sender, final Command command, final String cmdlabel, final String[] args) {
 		final Player p;
 
-			if (cmdlabel.equalsIgnoreCase("customec") || cmdlabel.equalsIgnoreCase("customenderchest")) {
+			if (cmdlabel.equalsIgnoreCase("customec") || cmdlabel.equalsIgnoreCase("customenderchest") || cmdlabel.equalsIgnoreCase("ec")) {
 				if (args.length == 0) {
 					if (sender instanceof Player) {
 						p = (Player) sender;
@@ -43,38 +42,22 @@ private EnderChest enderchest;
 									int size = enderchest.getEnderChestUtils().getSize(p);
 									if (size == 0) {
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
-										if (EnderChest.is19Server == true) {
-											p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-										} else {
-											p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-										}
+										enderchest.getSoundHandler().sendFailedSound(p);
 										return false;
 									}
 									String enderChestTitle = enderchest.getEnderChestUtils().getTitle(p);
 									Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
 									enderchest.getStorageInterface().loadEnderChest(p, inv);
-									if (EnderChest.is19Server == true) {
-										p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
-									} else {
-										p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
-									}
+									enderchest.getSoundHandler().sendEnderchestOpenSound(p);
 									p.openInventory(inv);
 									return true;
 								}
 								if (p.hasPermission("CustomEnderChest.admin")) {
-									if (EnderChest.is19Server == true) {
-										p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-									} else {
-										p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-									}
+									enderchest.getSoundHandler().sendFailedSound(p);
 									enderchest.getConfigHandler().printMessage(p, "chatMessages.openCmdUsage");
 									return false;
 								}
-								if (EnderChest.is19Server == true) {
-									p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-								} else {
-									p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-								}
+								enderchest.getSoundHandler().sendFailedSound(p);
 								enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 								return false;
 							} else {
@@ -86,19 +69,11 @@ private EnderChest enderchest;
 						if (sender instanceof Player) {
 							p = (Player) sender;
 							if (p.hasPermission("CustomEnderChest.admin")) {
-								if (EnderChest.is19Server == true) {
-									p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-								} else {
-									p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-								}
+								enderchest.getSoundHandler().sendFailedSound(p);
 								enderchest.getConfigHandler().printMessage(p, "chatMessages.deleteCmdUsage");
 								return false;
 							}
-							if (EnderChest.is19Server == true) {
-								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-							} else {
-								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-							}
+							enderchest.getSoundHandler().sendFailedSound(p);
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -114,27 +89,15 @@ private EnderChest enderchest;
 									enderchest.getConfig().load(new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"config.yml"));
 								} catch (Exception e) {
 									enderchest.getConfigHandler().printMessage(p, "chatMessages.reloadFail");
-									if (EnderChest.is19Server == true) {
-										p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-									} else {
-										p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-									}
+									enderchest.getSoundHandler().sendFailedSound(p);
 									e.printStackTrace();
 									return false;
 								}
-								if (EnderChest.is19Server == true) {
-									p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
-								} else {
-									p.playSound(p.getLocation(), Sound.valueOf("LEVEL_UP"), 1.0F, 1.0F);
-								}
+								enderchest.getSoundHandler().sendCompleteSound(p);
 								enderchest.getConfigHandler().printMessage(p, "chatMessages.reload");
 								return true;
 							}
-							if (EnderChest.is19Server == true) {
-								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-							} else {
-								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-							}
+							enderchest.getSoundHandler().sendFailedSound(p);
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -168,11 +131,7 @@ private EnderChest enderchest;
 								if (target != null) {
 									if (target.isOnline()) {
 										if (!enderchest.getStorageInterface().hasDataFile(target.getUniqueId())) {
-											if (EnderChest.is19Server == true) {
-												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-											} else {
-												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-											}
+											enderchest.getSoundHandler().sendFailedSound(p);
 											enderchest.getConfigHandler().printMessage(p, "chatMessages.noEnderchest");
 											return false;
 										}
@@ -180,11 +139,7 @@ private EnderChest enderchest;
 										String enderChestTitle = enderchest.getEnderChestUtils().getCmdTitle(target);
 										Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
 										enderchest.getStorageInterface().loadEnderChest(target, inv);
-										if (EnderChest.is19Server == true) {
-											p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
-										} else {
-											p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
-										}
+										enderchest.getSoundHandler().sendEnderchestOpenSound(p);
 										p.openInventory(inv);
 										enderchest.admin.put(enderChestTitle, target.getUniqueId());
 										return true;
@@ -193,11 +148,7 @@ private EnderChest enderchest;
 								    	try {
 								    		UUID targetUUID = UUID.fromString(args[1]);
 									    	if (!enderchest.getStorageInterface().hasDataFile(targetUUID)) {
-									    		if (EnderChest.is19Server == true) {
-													p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-												} else {
-													p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-												}
+									    		enderchest.getSoundHandler().sendFailedSound(p);
 												enderchest.getConfigHandler().printMessage(p, "chatMessages.openUuidFail");
 												return false;
 											}
@@ -205,30 +156,18 @@ private EnderChest enderchest;
 											String enderChestTitle = enderchest.getEnderChestUtils().getCmdTitle(targetUUID);
 											Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
 											enderchest.getStorageInterface().loadEnderChest(targetUUID, inv);
-											if (EnderChest.is19Server == true) {
-												p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
-											} else {
-												p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
-											}
+											enderchest.getSoundHandler().sendEnderchestOpenSound(p);
 											p.openInventory(inv);
 											enderchest.admin.put(enderChestTitle, targetUUID);
 											return true;
 								    	} catch (Exception e) {
-								    		if (EnderChest.is19Server == true) {
-												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-											} else {
-												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-											}
+								    		enderchest.getSoundHandler().sendFailedSound(p);
 								    		enderchest.getConfigHandler().printMessage(p, "chatMessages.openNameOffline");
 								    		return false;
 								    	}
 								    }
 							}
-							if (EnderChest.is19Server == true) {
-								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-							} else {
-								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-							}
+							enderchest.getSoundHandler().sendFailedSound(p);
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -244,20 +183,12 @@ private EnderChest enderchest;
 								if (target != null) {
 									if (target.isOnline()) {
 										if (!enderchest.getStorageInterface().hasDataFile(target.getUniqueId())) {
-											if (EnderChest.is19Server == true) {
-												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-											} else {
-												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-											}
+											enderchest.getSoundHandler().sendFailedSound(p);
 											enderchest.getConfigHandler().printMessage(p, "chatMessages.noEnderchest");
 											return false;
 										}
 										enderchest.getStorageInterface().deleteDataFile(target.getUniqueId());
-										if (EnderChest.is19Server == true) {
-											p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
-										} else {
-											p.playSound(p.getLocation(), Sound.valueOf("LEVEL_UP"), 1.0F, 1.0F);
-										}
+										enderchest.getSoundHandler().sendCompleteSound(p);
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.delete");
 										return true;
 									}
@@ -265,39 +196,23 @@ private EnderChest enderchest;
 									try {
 										UUID targetUUID = UUID.fromString(args[1]);
 										if (!enderchest.getStorageInterface().hasDataFile(targetUUID)) {
-											if (EnderChest.is19Server == true) {
-												p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-											} else {
-												p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-											}
+											enderchest.getSoundHandler().sendFailedSound(p);
 											enderchest.getConfigHandler().printMessage(p, "chatMessages.openUuidFail");
 											return false;
 										}
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.delete");
 										enderchest.getStorageInterface().deleteDataFile(targetUUID);
-										if (EnderChest.is19Server == true) {
-											p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
-										} else {
-											p.playSound(p.getLocation(), Sound.valueOf("LEVEL_UP"), 1.0F, 1.0F);
-										}
+										enderchest.getSoundHandler().sendCompleteSound(p);
 										return true;
 									} catch (Exception e) {
-										if (EnderChest.is19Server == true) {
-											p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-										} else {
-											p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-										}
+										enderchest.getSoundHandler().sendFailedSound(p);
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.deleteNameOffline");
 							    		return false;
 									}
 								}
 
 							}
-							if (EnderChest.is19Server == true) {
-								p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-							} else {
-								p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-							}
+							enderchest.getSoundHandler().sendFailedSound(p);
 							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 							return false;
 						} else {
@@ -343,11 +258,7 @@ private EnderChest enderchest;
 	}
 	
 	public void sendHelp(Player p) {
-		if (EnderChest.is19Server == true) {
-			p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0F, 1.0F);
-		} else {
-			p.playSound(p.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0F, 1.0F);
-		}
+		enderchest.getSoundHandler().sendAnvilLandSound(p);
 		p.sendMessage(" ");
 		p.sendMessage(ChatColor.DARK_PURPLE + "-=-=-=-=-=-=-=-< " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "CustomEnderChest" + ChatColor.DARK_PURPLE + " >-=-=-=-=-=-=-=-=-");
 		if (p.hasPermission("CustomEnderChest.admin")) {

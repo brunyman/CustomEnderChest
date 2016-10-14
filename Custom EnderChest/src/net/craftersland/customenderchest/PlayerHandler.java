@@ -2,7 +2,6 @@ package net.craftersland.customenderchest;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -31,7 +30,7 @@ public class PlayerHandler implements Listener {
 		}
 		
 		Block b = e.getClickedBlock();
-		if ((p.isSneaking()) && (p.getItemInHand().getType() != Material.AIR)) {
+		if (p.isSneaking()) {
 			return;
 		}
 		if (b.getType() != Material.ENDER_CHEST) {
@@ -52,19 +51,11 @@ public class PlayerHandler implements Listener {
 		
 		try {
 			if (enderchest.admin.containsKey(inv.getTitle())) {
-				if (EnderChest.is19Server == true) {
-					p.playSound(p.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1.0F, 1.0F);
-				} else {
-					p.playSound(p.getLocation(), Sound.valueOf("CHEST_CLOSE"), 1.0F, 1.0F);
-				}
+				enderchest.getSoundHandler().sendEnderchestCloseSound(p);
 				enderchest.getStorageInterface().saveEnderChest(enderchest.admin.get(inv.getTitle()), p, inv);
 				enderchest.admin.remove(inv.getTitle());
 			} else if (inv.getTitle().matches(enderchest.getEnderChestUtils().getTitle(p))) {
-				if (EnderChest.is19Server == true) {
-					p.playSound(p.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1.0F, 1.0F);
-				} else {
-					p.playSound(p.getLocation(), Sound.valueOf("CHEST_CLOSE"), 1.0F, 1.0F);
-				}
+				enderchest.getSoundHandler().sendEnderchestCloseSound(p);
 				enderchest.getStorageInterface().saveEnderChest(p, inv);
 			}
 		} catch (Exception ex) {
@@ -82,11 +73,7 @@ public class PlayerHandler implements Listener {
 		//No enderchest permission
 		if (size == 0) {
 			enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
-			if (EnderChest.is19Server == true) {
-				p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1.0F, 1.0F);
-			} else {
-				p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0F, 1.0F);
-			}
+			enderchest.getSoundHandler().sendFailedSound(p);
 			return;
 		}
 					
@@ -95,11 +82,7 @@ public class PlayerHandler implements Listener {
 		//Load enderchest inventory from data source
 		enderchest.getStorageInterface().loadEnderChest(p, inv);
 		//Open the enderchest inventory
-		if (EnderChest.is19Server == true) {
-			p.playSound(p.getLocation(), Sound.BLOCK_CHEST_OPEN, 1.0F, 1.0F);
-		} else {
-			p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1.0F, 1.0F);
-		}
+		enderchest.getSoundHandler().sendEnderchestOpenSound(p);
 		p.openInventory(inv);
 	}
 
