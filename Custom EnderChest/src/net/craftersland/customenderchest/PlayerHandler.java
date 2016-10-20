@@ -3,7 +3,6 @@ package net.craftersland.customenderchest;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,22 +44,25 @@ public class PlayerHandler implements Listener {
 	//Player inventory close event
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
-		HumanEntity hE = e.getPlayer();
-		Player p = (Player)hE;
-		Inventory inv = e.getInventory();
-		
-		try {
-			if (enderchest.admin.containsKey(inv.getTitle())) {
-				enderchest.getSoundHandler().sendEnderchestCloseSound(p);
-				enderchest.getStorageInterface().saveEnderChest(enderchest.admin.get(inv.getTitle()), p, inv);
-				enderchest.admin.remove(inv.getTitle());
-			} else if (inv.getTitle().matches(enderchest.getEnderChestUtils().getTitle(p))) {
-				enderchest.getSoundHandler().sendEnderchestCloseSound(p);
-				enderchest.getStorageInterface().saveEnderChest(p, inv);
+		Player p = (Player) e.getPlayer();
+		if (p != null) {
+			if (e.getInventory() != null) {
+				if (e.getInventory().getTitle() != null) {
+					try {
+						if (enderchest.admin.containsKey(e.getInventory().getTitle())) {
+							enderchest.getSoundHandler().sendEnderchestCloseSound(p);
+							enderchest.getStorageInterface().saveEnderChest(enderchest.admin.get(e.getInventory().getTitle()), p, e.getInventory());
+							enderchest.admin.remove(e.getInventory().getTitle());
+						} else if (e.getInventory().getTitle().matches(enderchest.getEnderChestUtils().getTitle(p))) {
+							enderchest.getSoundHandler().sendEnderchestCloseSound(p);
+							enderchest.getStorageInterface().saveEnderChest(p, e.getInventory());
+						}
+					} catch (Exception ex) {
+						EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
+						ex.printStackTrace();
+					}
+				}
 			}
-		} catch (Exception ex) {
-			EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
-			ex.printStackTrace();
 		}
 	}
 	

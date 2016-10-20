@@ -36,7 +36,7 @@ public class EnderChestUtils {
 			chestTitle.set(0, chestTitle.get(0).replaceAll("%level", enderchest.getConfigHandler().getString("enderChestTitle.level0")));
 		}
 		
-		chestTitle.set(0, chestTitle.get(0).replaceAll("%player", p.getDisplayName()));
+		chestTitle.set(0, chestTitle.get(0).replaceAll("%player", p.getName()));
 		
 		if (chestTitle.get(0).length() <= 32) {
 			String enderChestTitle = chestTitle.get(0).replaceAll("&", "§");
