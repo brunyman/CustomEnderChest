@@ -2,7 +2,6 @@ package net.craftersland.customenderchest;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,23 +21,15 @@ public class PlayerHandler implements Listener {
 	//Player click event
 	@EventHandler
 	public void onPlayerClickEvent(PlayerInteractEvent e) {
-		
-		Player p = e.getPlayer();
 		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
-		
-		Block b = e.getClickedBlock();
-		if (p.isSneaking()) {
-			return;
-		}
-		if (b.getType() != Material.ENDER_CHEST) {
+		if (e.getClickedBlock().getType() != Material.ENDER_CHEST) {
 			return;
 		}
 		e.setCancelled(true);
 		
-		openMenu(p);
-			
+		openMenu(e.getPlayer());
 	}
 	
 	//Player inventory close event
