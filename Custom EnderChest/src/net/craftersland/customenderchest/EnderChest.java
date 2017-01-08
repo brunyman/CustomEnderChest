@@ -1,5 +1,6 @@
 package net.craftersland.customenderchest;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -12,19 +13,21 @@ import net.craftersland.customenderchest.storage.StorageInterface;
 import net.craftersland.customenderchest.utils.EnderChestUtils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class EnderChest extends JavaPlugin {
 	
 	public static Logger log;
-	public Map<String, UUID> admin = new HashMap<String, UUID>();
+	public Map<Inventory, UUID> admin = new HashMap<Inventory, UUID>();
 	public static boolean is19Server = true;
 	public static String pluginName = "CustomEnderChest";
 	
 	private static ConfigHandler configHandler;
 	private static StorageInterface storageInterface;
 	private static EnderChestUtils enderchestUtils;
+	private static DataHandler dH;
 	private static MysqlSetup mysqlSetup;
 	private static SoundHandler sH;
 	
@@ -33,12 +36,17 @@ public class EnderChest extends JavaPlugin {
 			getMcVersion();	    	
 	        configHandler = new ConfigHandler(this);
 	        enderchestUtils = new EnderChestUtils(this);
+	        dH = new DataHandler();
 	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql") == true) {
 	        	log.info("Using MySQL database for data.");
 	        	mysqlSetup = new MysqlSetup(this);
 	        	storageInterface = new MysqlStorage(this);
 	        } else {
 	        	log.info("Using FlatFile system for data.");
+	        	File pluginFolder = new File("plugins" + System.getProperty("file.separator") + pluginName + System.getProperty("file.separator") + "PlayerData");
+	    		if (pluginFolder.exists() == false) {
+	        		pluginFolder.mkdir();
+	        	}
 		      	storageInterface = new FlatFileStorage(this);	
 	        }
 	        sH = new SoundHandler(this);
@@ -85,6 +93,9 @@ public class EnderChest extends JavaPlugin {
 		}
 		public SoundHandler getSoundHandler() {
 			return sH;
+		}
+		public DataHandler getDataHandler() {
+			return dH;
 		}
 
 }

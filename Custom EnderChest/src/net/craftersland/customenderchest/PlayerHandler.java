@@ -1,5 +1,7 @@
 package net.craftersland.customenderchest;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -8,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 
 public class PlayerHandler implements Listener {
@@ -16,6 +20,34 @@ public class PlayerHandler implements Listener {
 	
 	public PlayerHandler(EnderChest enderchest) {
 		this.enderchest = enderchest;
+	}
+	
+	@EventHandler
+	public void onPlayerJoinEvent(final PlayerJoinEvent e) {
+		Bukkit.getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
+
+			@Override
+			public void run() {
+				if (e.getPlayer().isOnline() == true) {
+					int size = enderchest.getEnderChestUtils().getSize(e.getPlayer());
+					if (size == 0) {
+						size = 9;
+					}
+					String enderChestTitle = enderchest.getEnderChestUtils().getTitle(e.getPlayer());
+					Inventory inv = Bukkit.getServer().createInventory(e.getPlayer(), size, enderChestTitle);
+					if (enderchest.getStorageInterface().hasDataFile(e.getPlayer().getUniqueId()) == true) {
+						enderchest.getStorageInterface().loadEnderChest(e.getPlayer(), inv);
+					}
+					enderchest.getDataHandler().setData(e.getPlayer().getUniqueId(), inv);
+				}
+			}
+			
+		});
+	}
+	
+	@EventHandler
+	public void onPlayerDisconnectEvent(PlayerQuitEvent e) {
+		enderchest.getDataHandler().removeData(e.getPlayer().getUniqueId());
 	}
 	
 	//Player click event
@@ -29,7 +61,23 @@ public class PlayerHandler implements Listener {
 		}
 		e.setCancelled(true);
 		
-		openMenu(e.getPlayer());
+		enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+	}
+	
+	private void saveEnderchest(final Inventory inv, final Player p, final UUID u) {
+		Bukkit.getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
+
+			@Override
+			public void run() {
+				if (u == null) {
+					enderchest.getStorageInterface().saveEnderChest(p, inv);
+				} else {
+					enderchest.getStorageInterface().saveEnderChest(u, p, inv);
+					enderchest.admin.remove(inv);
+				}
+			}
+			
+		});
 	}
 	
 	//Player inventory close event
@@ -38,45 +86,28 @@ public class PlayerHandler implements Listener {
 		Player p = (Player) e.getPlayer();
 		if (p != null) {
 			if (e.getInventory() != null) {
-				if (e.getInventory().getTitle() != null) {
-					try {
-						if (enderchest.admin.containsKey(e.getInventory().getTitle())) {
-							enderchest.getSoundHandler().sendEnderchestCloseSound(p);
-							enderchest.getStorageInterface().saveEnderChest(enderchest.admin.get(e.getInventory().getTitle()), p, e.getInventory());
-							enderchest.admin.remove(e.getInventory().getTitle());
-						} else if (e.getInventory().getTitle().matches(enderchest.getEnderChestUtils().getTitle(p))) {
-							enderchest.getSoundHandler().sendEnderchestCloseSound(p);
-							enderchest.getStorageInterface().saveEnderChest(p, e.getInventory());
+				try {
+					if (enderchest.getDataHandler().isLiveEnderchest(e.getInventory()) == true) {
+						enderchest.getSoundHandler().sendEnderchestCloseSound(p);
+						if (enderchest.admin.containsKey(e.getInventory()) == true) {
+							UUID u = enderchest.admin.get(e.getInventory());
+							enderchest.getDataHandler().setData(u, e.getInventory());
+							saveEnderchest(e.getInventory(),(Player) e.getPlayer(), u);
+						} else {
+							enderchest.getDataHandler().setData(e.getPlayer().getUniqueId(), e.getInventory());
+							saveEnderchest(e.getInventory(), (Player) e.getPlayer(), null);
 						}
-					} catch (Exception ex) {
-						EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
-						ex.printStackTrace();
+					} else if (enderchest.admin.containsKey(e.getInventory()) == true) {
+						enderchest.getSoundHandler().sendEnderchestCloseSound(p);
+						saveEnderchest(e.getInventory(),(Player) e.getPlayer(), enderchest.admin.get(e.getInventory()));
+						enderchest.admin.remove(e.getInventory());
 					}
+				} catch (Exception ex) {
+					EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
+					ex.printStackTrace();
 				}
 			}
 		}
-	}
-	
-	//Opening the enderchest
-	public void openMenu(Player p) {
-		//Cancel vanilla enderchest
-		p.closeInventory();
-				
-		int size = enderchest.getEnderChestUtils().getSize(p);
-		//No enderchest permission
-		if (size == 0) {
-			enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
-			enderchest.getSoundHandler().sendFailedSound(p);
-			return;
-		}
-					
-		String enderChestTitle = enderchest.getEnderChestUtils().getTitle(p);
-		Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
-		//Load enderchest inventory from data source
-		enderchest.getStorageInterface().loadEnderChest(p, inv);
-		//Open the enderchest inventory
-		enderchest.getSoundHandler().sendEnderchestOpenSound(p);
-		p.openInventory(inv);
 	}
 
 }

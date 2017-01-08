@@ -45,11 +45,7 @@ private EnderChest enderchest;
 										enderchest.getSoundHandler().sendFailedSound(p);
 										return false;
 									}
-									String enderChestTitle = enderchest.getEnderChestUtils().getTitle(p);
-									Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
-									enderchest.getStorageInterface().loadEnderChest(p, inv);
-									enderchest.getSoundHandler().sendEnderchestOpenSound(p);
-									p.openInventory(inv);
+									enderchest.getEnderChestUtils().openMenu(p);
 									return true;
 								}
 								if (p.hasPermission("CustomEnderChest.admin")) {
@@ -135,13 +131,10 @@ private EnderChest enderchest;
 											enderchest.getConfigHandler().printMessage(p, "chatMessages.noEnderchest");
 											return false;
 										}
-										int size = enderchest.getStorageInterface().loadSize(target.getUniqueId());
-										String enderChestTitle = enderchest.getEnderChestUtils().getCmdTitle(target);
-										Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
-										enderchest.getStorageInterface().loadEnderChest(target, inv);
+										Inventory inv = enderchest.getDataHandler().getData(target.getUniqueId());
 										enderchest.getSoundHandler().sendEnderchestOpenSound(p);
 										p.openInventory(inv);
-										enderchest.admin.put(enderChestTitle, target.getUniqueId());
+										enderchest.admin.put(inv, target.getUniqueId());
 										return true;
 								        }
 								    } else {
@@ -158,7 +151,7 @@ private EnderChest enderchest;
 											enderchest.getStorageInterface().loadEnderChest(targetUUID, inv);
 											enderchest.getSoundHandler().sendEnderchestOpenSound(p);
 											p.openInventory(inv);
-											enderchest.admin.put(enderChestTitle, targetUUID);
+											enderchest.admin.put(inv, targetUUID);
 											return true;
 								    	} catch (Exception e) {
 								    		enderchest.getSoundHandler().sendFailedSound(p);

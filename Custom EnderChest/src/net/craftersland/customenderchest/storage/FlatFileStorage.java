@@ -34,8 +34,7 @@ public class FlatFileStorage implements StorageInterface {
 		public boolean createDataFile(UUID playerUUID, Player player) {
 			try {
 				dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
-				if (!dataFile.exists())
-				{
+				if (!dataFile.exists())	{
 					dataFile.createNewFile();
 					FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 	 			    String playerName = player.getName();
@@ -50,6 +49,7 @@ public class FlatFileStorage implements StorageInterface {
 				
 			} catch (Exception e) {
 				enderchest.getLogger().severe("Could not create data file " + playerUUID + "!");
+				e.printStackTrace();
 			}
 			return false;
 		}
@@ -76,6 +76,7 @@ public class FlatFileStorage implements StorageInterface {
 				
 			} catch (Exception e) {
 				enderchest.getLogger().severe("Could not save inventory of "+playerUUID+"!");
+				e.printStackTrace();
 			}
 			return false;
 		}
@@ -94,6 +95,7 @@ public class FlatFileStorage implements StorageInterface {
 				
 			} catch (Exception e) {
 				enderchest.getLogger().severe("Could not save inventory of "+playerUUID+"!");
+				e.printStackTrace();
 			}
 			return false;
 		}
@@ -192,6 +194,7 @@ public class FlatFileStorage implements StorageInterface {
 				
 			} catch (Exception e) {
 				enderchest.getLogger().severe("Could not delete data file " + playerUUID + "!");
+				e.printStackTrace();
 			}
 			return false;
 		}

@@ -6,8 +6,11 @@ import java.util.UUID;
 
 import net.craftersland.customenderchest.EnderChest;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public class EnderChestUtils {
 	
@@ -89,6 +92,40 @@ public class EnderChestUtils {
 		}
 		
 		return 0;
+	}
+    
+    public void openMenu(Player p) {
+		//Cancel vanilla enderchest
+		p.closeInventory();
+				
+		int size = enderchest.getEnderChestUtils().getSize(p);
+		//No enderchest permission
+		if (size == 0) {
+			enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+			enderchest.getSoundHandler().sendFailedSound(p);
+			return;
+		}
+		Inventory inv = enderchest.getDataHandler().getData(p.getUniqueId());
+		if (inv == null) {
+			String enderChestTitle = enderchest.getEnderChestUtils().getTitle(p);
+			inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
+		} else if (inv.getSize() != size) {
+			String enderChestTitle = enderchest.getEnderChestUtils().getTitle(p);
+			Inventory newInv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
+			int toScan;
+			if (size > inv.getSize()) {
+				toScan = inv.getSize();
+			} else {
+				toScan = size;
+			}
+			for (int i = 0; i < toScan; i++) {
+    			ItemStack item = inv.getItem(i);
+    			newInv.setItem(i, item);
+            }
+			inv = newInv;
+		}
+		enderchest.getSoundHandler().sendEnderchestOpenSound(p);
+		p.openInventory(inv);
 	}
 
 }
