@@ -11,8 +11,10 @@ import net.craftersland.customenderchest.storage.MysqlSetup;
 import net.craftersland.customenderchest.storage.MysqlStorage;
 import net.craftersland.customenderchest.storage.StorageInterface;
 import net.craftersland.customenderchest.utils.EnderChestUtils;
+import net.craftersland.customenderchest.utils.ModdedSerializer;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,11 +32,13 @@ public class EnderChest extends JavaPlugin {
 	private static DataHandler dH;
 	private static MysqlSetup mysqlSetup;
 	private static SoundHandler sH;
+	private static ModdedSerializer ms;
 	
 		public void onEnable() {
 			log = getLogger();
 			getMcVersion();	    	
 	        configHandler = new ConfigHandler(this);
+	        checkForModdedNBTsupport();
 	        enderchestUtils = new EnderChestUtils(this);
 	        dH = new DataHandler();
 	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql") == true) {
@@ -60,6 +64,8 @@ public class EnderChest extends JavaPlugin {
 		
 		//Disabling plugin
 		public void onDisable() {
+			HandlerList.unregisterAll(this);
+			Bukkit.getScheduler().cancelTasks(this);
 			if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 				if (mysqlSetup.getConnection() != null) {
 					mysqlSetup.closeDatabase();
@@ -79,6 +85,21 @@ public class EnderChest extends JavaPlugin {
 		    return false;
 		}
 		
+		private void checkForModdedNBTsupport() {
+			if (configHandler.getBoolean("settings.modded-NBT-data-support") == true) {
+				if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
+					if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
+						ms = new ModdedSerializer(this);
+						log.info("ProtocolLib dependency found. Modded NBT data support is enabled!");
+			        } else {
+			        	log.warning("ProtocolLib dependency not found!!! Modded NBT data support is disabled!");
+			        }
+				} else {
+					log.warning("NBT Modded data support only works for MySQL storage. Modded NBT data support is disabled!");
+				}
+			}
+	    }
+		
 		public ConfigHandler getConfigHandler() {
 			return configHandler;
 		}
@@ -96,6 +117,9 @@ public class EnderChest extends JavaPlugin {
 		}
 		public DataHandler getDataHandler() {
 			return dH;
+		}
+		public ModdedSerializer getModdedSerializer() {
+			return ms;
 		}
 
 }

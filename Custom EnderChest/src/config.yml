@@ -1,5 +1,5 @@
 # default config.yml for CustomEnderChest
-# config version 1.5.0
+# config version 1.6.0
 
 #Database settings
 database:
@@ -20,6 +20,13 @@ database:
             enabled: false
             #Inactivity in days. Default 60 days.
             inactive: 60
+            
+
+#Extra plugin settings.            
+settings:
+    #Add NBT data support for modded items. Requires MySQL storage and ProtocolLib dependency installed.
+    #NOTE!!! - Changes to this setting needs a server restart!
+    modded-NBT-data-support: false
 
 #Customize Ender Chest Title
 enderChestTitle:
@@ -27,11 +34,9 @@ enderChestTitle:
     #Minecraft Color and Format Codes: http://minecraft.gamepedia.com/Formatting_codes
     #WARNING! Max size is 32 characters including color, format codes.
     enderChestName: '&5&lEnderChest &7- %level'
-    
     #The place holder  %player  will be replaced by player's name.
-    
     #The  %level  place holder replace text below. So you can customize each enderchest title by enderchest size.
-    
+   
     #For 9 slots enderchest.
     level0: '&dLevel 0'
     #For 18 slots enderchest.

@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -108,7 +109,7 @@ public class MysqlStorage implements StorageInterface {
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `player_name` = ?" + ", `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_uuid` = ?";
 			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
 			preparedUpdateStatement.setString(1, p.getName() + "");
-			preparedUpdateStatement.setString(2, EncodingUtil.toBase64(endInv) + "");
+			preparedUpdateStatement.setString(2, encodeInventory(endInv, p.getName()));
 			preparedUpdateStatement.setInt(3, endInv.getSize());
 			preparedUpdateStatement.setString(4, String.valueOf(System.currentTimeMillis()));
 			preparedUpdateStatement.setString(5, uuid.toString() + "");
@@ -138,7 +139,7 @@ public class MysqlStorage implements StorageInterface {
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `player_name` = ?" + ", `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_uuid` = ?";
 			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
 			preparedUpdateStatement.setString(1, p.getName() + "");
-			preparedUpdateStatement.setString(2, EncodingUtil.toBase64(endInv) + "");
+			preparedUpdateStatement.setString(2, encodeInventory(endInv, p.getName()));
 			preparedUpdateStatement.setInt(3, endInv.getSize());
 			preparedUpdateStatement.setString(4, String.valueOf(System.currentTimeMillis()));
 			preparedUpdateStatement.setString(5, p.getUniqueId().toString() + "");
@@ -166,13 +167,13 @@ public class MysqlStorage implements StorageInterface {
 		PreparedStatement preparedUpdateStatement = null;
 		ResultSet result = null;
 		try {	 
-	        String sql = "SELECT `enderchest_data` FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
+	        String sql = "SELECT * FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
 	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, uuid.toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
 	        	try {
-	        		Inventory mysqlInv = EncodingUtil.fromBase64(result.getString("enderchest_data"));
+	        		Inventory mysqlInv = decodeInventory(result.getString("enderchest_data"), uuid.toString(), result.getInt("size"));
 	        		for (int i = 0; i < endInv.getSize(); i++) {
 	        			ItemStack item = mysqlInv.getItem(i);
 	        			endInv.setItem(i, item);
@@ -207,13 +208,13 @@ public class MysqlStorage implements StorageInterface {
 		PreparedStatement preparedUpdateStatement = null;
 		ResultSet result = null;
 		try {	 
-	        String sql = "SELECT `enderchest_data` FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
+	        String sql = "SELECT * FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
 	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
 	        preparedUpdateStatement.setString(1, p.getUniqueId().toString());
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
 	        	try {
-	        		Inventory mysqlInv = EncodingUtil.fromBase64(result.getString("enderchest_data"));
+	        		Inventory mysqlInv = decodeInventory(result.getString("enderchest_data"), p.getName(), result.getInt("size"));
 	        		
 	        		for (int i = 0; i < endInv.getSize(); i++) {
 	        			ItemStack item = mysqlInv.getItem(i);
@@ -227,7 +228,7 @@ public class MysqlStorage implements StorageInterface {
 	        	}
 	        }
 	      } catch (SQLException e) {
-	        e.printStackTrace();
+	        //e.printStackTrace();
 	      } finally {
 				try {
 					if (result != null) {
@@ -241,6 +242,52 @@ public class MysqlStorage implements StorageInterface {
 				}
 		  }
 		return false;
+	}
+	
+	private Inventory decodeInventory(String rawData, String playerName, int chestSize) {
+		if (enderchest.getModdedSerializer() != null) {
+			try {
+				ItemStack[] items = enderchest.getModdedSerializer().fromBase64(rawData);
+				Inventory inv = Bukkit.getServer().createInventory(null, chestSize);
+				inv.setContents(items);
+				return inv;
+			} catch (Exception e) {
+				e.printStackTrace();
+				try {
+					return EncodingUtil.fromBase64(rawData);
+				} catch (Exception ex) {
+					EnderChest.log.severe("Failed to decode inventory for " + playerName + "! Error: " + ex.getMessage());
+					ex.printStackTrace();
+				}
+			}
+		} else {
+			try {
+				return EncodingUtil.fromBase64(rawData);
+			} catch (Exception e) {
+				EnderChest.log.severe("Failed to decode inventory for " + playerName + "! Error: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	private String encodeInventory(Inventory inv, String playerName) {
+		if (enderchest.getModdedSerializer() != null) {
+			try {
+				return enderchest.getModdedSerializer().toBase64(inv.getContents());
+			} catch (Exception e) {
+				EnderChest.log.severe("Failed to save enderchest data for " + playerName + "! Error: " + e.getMessage());
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				return EncodingUtil.toBase64(inv);
+			} catch (Exception e) {
+				EnderChest.log.severe("Failed to save enderchest data for " + playerName + "! Error: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 	
 	public String loadName(UUID uuid) {
@@ -304,5 +351,7 @@ public class MysqlStorage implements StorageInterface {
 		  }
 		return null;
 	}
+	
+	
 
 }
