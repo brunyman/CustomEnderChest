@@ -124,6 +124,7 @@ public class EnderChestUtils {
             }
 			inv = newInv;
 		}
+		enderchest.getDataHandler().setData(p.getUniqueId(), inv);
 		enderchest.getSoundHandler().sendEnderchestOpenSound(p);
 		p.openInventory(inv);
 	}
