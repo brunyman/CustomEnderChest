@@ -58,6 +58,7 @@ public class EnderChest extends JavaPlugin {
 	    	pm.registerEvents(new PlayerHandler(this), this);
 	    	CommandHandler cH = new CommandHandler(this);
 	    	getCommand("customec").setExecutor(cH);
+	    	getCommand("ec").setExecutor(cH);
 	    	getCommand("customenderchest").setExecutor(cH);
 	    	log.info(pluginName + " loaded successfully!");
 		}
