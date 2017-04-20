@@ -1,5 +1,5 @@
 # default config.yml for CustomEnderChest
-# config version 1.6.2
+# config version 1.6.4
 
 #Database settings
 database:
@@ -68,3 +68,43 @@ chatMessages:
     delete: '&dPlayer enderchest data removed!'
     reloadFail: '&dCould not load config! Check logs!'
     reload: '&dConfiguration reloaded!'
+    
+    #Help command with multi line support.
+    Help:
+        header:
+        - ' '
+        - '&5-=-=-=-=-=-=-=-< &d&lCustomEnderChest &5>-=-=-=-=-=-=-=-=-'
+        admin:
+        - ' '
+        - '&d        Open your enderchest:'
+        - '&8&l>> &f/customec open'
+        - ' '
+        - '&d        Open other player''s Ender Chest:'
+        - '&8&l>> &f/customec open <playerName> &7- for online players.'
+        - '&8&l>> &f/customec open <playerUUID> &7- for offline players.'
+        - '&7      Example: &f/customec open John&7 or &f/customec open f694517d-d6cf-32f1-972b-dfc677ceac45'
+        - ' '
+        - '&d        Delete other player''s Ender Chest:'
+        - '&8&l>> &f/customec delete <playerName> &7- for online players.'
+        - '&8&l>> &f/customec delete <playerUUID> &7- for offline players.'
+        - '&7      Example: &f/customec delete John&7 or &f/customec delete f694517d-d6cf-32f1-972b-dfc677ceac45'
+        - ' '
+        - '&d        Reload plugin config:'
+        - '&8&l>> &f/customec reload'
+        - ' '
+        - '&5-=-=-=-=-=-=-=-=-< &d&lAdmin Help Page &5>-=-=-=-=-=-=-=-=-'
+        - ' '
+        user:
+        - ' '
+        - '&7&oGet a better custom Ender Chest!'
+        - '&7&lPlugin Download:&f https://goo.gl/YJ3VSE'
+        - ' '
+        command:
+        - '&d        Open your enderchest'
+        - '&8&l>> &f/customec open'
+        - ' '
+        userFooter:
+        - '&5-=-=-=-=-=-=-=-=-=-< &dHelp Page &5>-=-=-=-=-=-=-=-=-=-'
+        - ' '
+        
+        

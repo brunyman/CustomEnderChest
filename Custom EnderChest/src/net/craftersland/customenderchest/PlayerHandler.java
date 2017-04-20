@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public class PlayerHandler implements Listener {
 	
@@ -53,15 +54,37 @@ public class PlayerHandler implements Listener {
 	//Player click event
 	@EventHandler
 	public void onPlayerClickEvent(PlayerInteractEvent e) {
-		if (e.getAction() != Action.RIGHT_CLICK_BLOCK) {
-			return;
+		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
+			if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				if (e.getPlayer().isSneaking() == false) {
+					e.setCancelled(true);
+					enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+				} else {
+					if (EnderChest.is19Server == false) {
+						if (hasItemInHand(e.getPlayer().getItemInHand()) == false) {
+							e.setCancelled(true);
+							enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+						}
+					} else {
+						if (hasItemInHand(e.getPlayer().getInventory().getItemInMainHand()) == false && hasItemInHand(e.getPlayer().getInventory().getItemInOffHand()) == false) {
+							e.setCancelled(true);
+							enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+						}
+					}
+				}
+			}
 		}
-		if (e.getClickedBlock().getType() != Material.ENDER_CHEST) {
-			return;
+	}
+	
+	private boolean hasItemInHand(ItemStack item) {
+		if (item == null) {
+			return false;
+		} else {
+			if (item.getType() == Material.AIR) {
+				return false;
+			}
 		}
-		e.setCancelled(true);
-		
-		enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+		return true;
 	}
 	
 	private void saveEnderchest(final Inventory inv, final Player p, final UUID u) {

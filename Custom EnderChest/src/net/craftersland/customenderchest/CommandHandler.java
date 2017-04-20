@@ -252,40 +252,25 @@ private EnderChest enderchest;
 	
 	public void sendHelp(Player p) {
 		enderchest.getSoundHandler().sendAnvilLandSound(p);
-		p.sendMessage(" ");
-		p.sendMessage(ChatColor.DARK_PURPLE + "-=-=-=-=-=-=-=-< " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "CustomEnderChest" + ChatColor.DARK_PURPLE + " >-=-=-=-=-=-=-=-=-");
+		for (String h : enderchest.getConfigHandler().getStringList("chatMessages.Help.header")) {
+			p.sendMessage(h.replaceAll("&", "§"));
+		}
 		if (p.hasPermission("CustomEnderChest.admin")) {
-			p.sendMessage(" ");
-			p.sendMessage(ChatColor.LIGHT_PURPLE + "        Open your enderchest:");
-			p.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ">> " + ChatColor.WHITE + "/customec open");
-			p.sendMessage(" ");
-			p.sendMessage(ChatColor.LIGHT_PURPLE + "        Open other player's Ender Chest:");
-			p.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ">> " + ChatColor.WHITE + "/customec open <playerName>" + ChatColor.GRAY + " - for online players.");
-			p.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ">> " + ChatColor.WHITE + "/customec open <playerUUID>" + ChatColor.GRAY + " - for offline players.");
-			p.sendMessage(ChatColor.GRAY + "" + "      Example: " + ChatColor.WHITE + "/customec open John" + ChatColor.GRAY + " or " + ChatColor.WHITE + "/customec open f694517d-d6cf-32f1-972b-dfc677ceac45");
-			p.sendMessage(" ");
-			p.sendMessage(ChatColor.LIGHT_PURPLE + "        Delete other player's Ender Chest:");
-			p.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ">> " + ChatColor.WHITE + "/customec delete <playerName>" + ChatColor.GRAY + " - for online players.");
-			p.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ">> " + ChatColor.WHITE + "/customec delete <playerUUID>" + ChatColor.GRAY + " - for offline players.");
-			p.sendMessage(ChatColor.GRAY + "" + "      Example: " + ChatColor.WHITE + "/customec delete John" + ChatColor.GRAY + " or " + ChatColor.WHITE + "/customec delete f694517d-d6cf-32f1-972b-dfc677ceac45");
-			p.sendMessage(" ");
-			p.sendMessage(ChatColor.LIGHT_PURPLE + "        Reload plugin config:");
-			p.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ">> " + ChatColor.WHITE + "/customec reload");
-			p.sendMessage(" ");
-			p.sendMessage(ChatColor.DARK_PURPLE + "-=-=-=-=-=-=-=-=-< " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Admin Help Page" + ChatColor.DARK_PURPLE + " >-=-=-=-=-=-=-=-=-");
-			p.sendMessage(" ");
-		} else {
-			p.sendMessage(" ");
-			p.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Get a better custom Ender Chest!");
-			p.sendMessage(ChatColor.GRAY + "" + ChatColor.BOLD + "Plugin Download: " + ChatColor.WHITE + "Coming soon");
-			p.sendMessage(" ");
-			if (p.hasPermission("CustomEnderChest.commands")) {
-				p.sendMessage(ChatColor.LIGHT_PURPLE + "        Open your enderchest:");
-				p.sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.BOLD + ">> " + ChatColor.WHITE + "/customec open");
-				p.sendMessage(" ");
+			for (String h : enderchest.getConfigHandler().getStringList("chatMessages.Help.admin")) {
+				p.sendMessage(h.replaceAll("&", "§"));
 			}
-			p.sendMessage(ChatColor.DARK_PURPLE + "-=-=-=-=-=-=-=-=-=-< " + ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD + "Help Page" + ChatColor.DARK_PURPLE + " >-=-=-=-=-=-=-=-=-=-");
-			p.sendMessage(" ");
+		} else {
+			for (String h : enderchest.getConfigHandler().getStringList("chatMessages.Help.user")) {
+				p.sendMessage(h.replaceAll("&", "§"));
+			}
+			if (p.hasPermission("CustomEnderChest.commands")) {
+				for (String h : enderchest.getConfigHandler().getStringList("chatMessages.Help.command")) {
+					p.sendMessage(h.replaceAll("&", "§"));
+				}
+			}
+			for (String h : enderchest.getConfigHandler().getStringList("chatMessages.Help.userFooter")) {
+				p.sendMessage(h.replaceAll("&", "§"));
+			}
 		}
 	}
 	
