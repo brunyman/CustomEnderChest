@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import org.bukkit.Bukkit;
 
@@ -15,6 +16,7 @@ public class MysqlSetup {
 	
 	private Connection conn = null;
 	private EnderChest enderchest;
+	private boolean tablesChecked = false;
 	
 	public MysqlSetup(EnderChest enderchest) {
 		this.enderchest = enderchest;
@@ -24,7 +26,6 @@ public class MysqlSetup {
 	
 	public void setupDatabase() {
 		connectToDatabase();
-		setupTables();
 		databaseMaintenanceTask();
 	}
 	
@@ -74,37 +75,47 @@ public class MysqlSetup {
        	 	//Load Drivers
             Class.forName("com.mysql.jdbc.Driver");
             
-            String passFix = enderchest.getConfigHandler().getString("database.mysql.password").replaceAll("%", "%25");
-            String passFix2 = passFix.replaceAll("\\+", "%2B");
+            Properties properties = new Properties();
+            properties.setProperty("user", enderchest.getConfigHandler().getString("database.mysql.user"));
+            properties.setProperty("password", enderchest.getConfigHandler().getString("database.mysql.password"));
+            properties.setProperty("useSSL", "false");
+            properties.setProperty("autoReconnect", "true");
             
             //Connect to database
-            conn = DriverManager.getConnection("jdbc:mysql://" + enderchest.getConfigHandler().getString("database.mysql.host") + ":" + enderchest.getConfigHandler().getString("database.mysql.port") + "/" + enderchest.getConfigHandler().getString("database.mysql.databaseName") + "?" + "user=" + enderchest.getConfigHandler().getString("database.mysql.user") + "&" + "password=" + passFix2);
+            conn = DriverManager.getConnection("jdbc:mysql://" + enderchest.getConfigHandler().getString("database.mysql.host") + ":" + enderchest.getConfigHandler().getString("database.mysql.port") + "/" + enderchest.getConfigHandler().getString("database.mysql.databaseName"), properties);
             EnderChest.log.info("Database connection established!");
+            if (tablesChecked == false) {
+            	setupTables();
+            }
           } catch (ClassNotFoundException e) {
         	  EnderChest.log.severe("Could not locate drivers for mysql! Error: " + e.getMessage());
           } catch (SQLException e) {
         	  EnderChest.log.severe("Could not connect to mysql database! Error: " + e.getMessage());
           } catch (Exception ex) {
+        	  EnderChest.log.severe("Could not connect to mysql database! Error: " + ex.getMessage());
         	  ex.printStackTrace();
           }
 	}
 	
 	public void setupTables() {
-		PreparedStatement query1 = null;
-		try {
-			String data = "CREATE TABLE IF NOT EXISTS `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` (id int(10) AUTO_INCREMENT, player_uuid varchar(50) NOT NULL UNIQUE, player_name varchar(50) NOT NULL, enderchest_data LONGTEXT NOT NULL, size int(3) NOT NULL, last_seen varchar(30) NOT NULL, PRIMARY KEY(id));";
-	        query1 = conn.prepareStatement(data);
-	        query1.execute();
-		} catch (Exception e) {
-			EnderChest.log.severe("Error creating tables! Error: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
+		if (conn != null) {
+			PreparedStatement query1 = null;
 			try {
-				if (query1 != null) {
-					query1.close();
-				}
+				String data = "CREATE TABLE IF NOT EXISTS `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` (id int(10) AUTO_INCREMENT, player_uuid varchar(50) NOT NULL UNIQUE, player_name varchar(50) NOT NULL, enderchest_data LONGTEXT NOT NULL, size int(3) NOT NULL, last_seen varchar(30) NOT NULL, PRIMARY KEY(id));";
+		        query1 = conn.prepareStatement(data);
+		        query1.execute();
+		        tablesChecked = true;
 			} catch (Exception e) {
+				EnderChest.log.severe("Error creating tables! Error: " + e.getMessage());
 				e.printStackTrace();
+			} finally {
+				try {
+					if (query1 != null) {
+						query1.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -158,49 +169,51 @@ public class MysqlSetup {
 	}
 	
 	private void updateTables() {
-		DatabaseMetaData md = null;
-    	ResultSet rs1 = null;
-    	ResultSet rs2 = null;
-    	PreparedStatement query1 = null;
-    	PreparedStatement query2 = null;
-		try {
-			md = conn.getMetaData();
-		    rs1 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest");
-		    if (rs1.next()) {
-		        String data1 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` CHANGE COLUMN enderchest enderchest_data LONGTEXT NOT NULL;";
-		        query1 = conn.prepareStatement(data1);
-		        query1.execute();
-		    } else {
-		    	rs2 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest_data");
-		    	if (rs2.next()) {
-		    		if (rs2.getString("TYPE_NAME").matches("VARCHAR")) {
-	            		String data2 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` MODIFY enderchest_data LONGTEXT NOT NULL;";
-				        query2 = conn.prepareStatement(data2);
-				        query2.execute();
-	            	}
-		    	}
-		    }    
-		    
-		} catch (Exception e) {
-			EnderChest.log.warning("Error on table update! Error: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
+		if (conn != null) {
+			DatabaseMetaData md = null;
+	    	ResultSet rs1 = null;
+	    	ResultSet rs2 = null;
+	    	PreparedStatement query1 = null;
+	    	PreparedStatement query2 = null;
 			try {
-    			if (query1 != null) {
-    				query1.close();
-    			}
-    			if (query2 != null) {
-    				query2.close();
-    			}
-    			if (rs1 != null) {
-    				rs1.close();
-    			}
-    			if (rs2 != null) {
-    				rs2.close();
-    			}
-    		} catch (Exception e) {
-    			e.printStackTrace();
-    		}
+				md = conn.getMetaData();
+			    rs1 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest");
+			    if (rs1.next()) {
+			        String data1 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` CHANGE COLUMN enderchest enderchest_data LONGTEXT NOT NULL;";
+			        query1 = conn.prepareStatement(data1);
+			        query1.execute();
+			    } else {
+			    	rs2 = md.getColumns(null, null, enderchest.getConfigHandler().getString("database.mysql.tableName"), "enderchest_data");
+			    	if (rs2.next()) {
+			    		if (rs2.getString("TYPE_NAME").matches("VARCHAR")) {
+		            		String data2 = "ALTER TABLE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` MODIFY enderchest_data LONGTEXT NOT NULL;";
+					        query2 = conn.prepareStatement(data2);
+					        query2.execute();
+		            	}
+			    	}
+			    }    
+			    
+			} catch (Exception e) {
+				EnderChest.log.warning("Error on table update! Error: " + e.getMessage());
+				e.printStackTrace();
+			} finally {
+				try {
+	    			if (query1 != null) {
+	    				query1.close();
+	    			}
+	    			if (query2 != null) {
+	    				query2.close();
+	    			}
+	    			if (rs1 != null) {
+	    				rs1.close();
+	    			}
+	    			if (rs2 != null) {
+	    				rs2.close();
+	    			}
+	    		} catch (Exception e) {
+	    			e.printStackTrace();
+	    		}
+			}
 		}
 	}
 
