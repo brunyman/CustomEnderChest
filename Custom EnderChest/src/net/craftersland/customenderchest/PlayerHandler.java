@@ -53,22 +53,24 @@ public class PlayerHandler implements Listener {
 	
 	//Player click event
 	@EventHandler
-	public void onPlayerClickEvent(PlayerInteractEvent e) {
-		if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
-			if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				if (e.getPlayer().isSneaking() == false) {
-					e.setCancelled(true);
-					enderchest.getEnderChestUtils().openMenu(e.getPlayer());
-				} else {
-					if (EnderChest.is19Server == false) {
-						if (hasItemInHand(e.getPlayer().getItemInHand()) == false) {
-							e.setCancelled(true);
-							enderchest.getEnderChestUtils().openMenu(e.getPlayer());
-						}
+	public void onPlayerInteract(PlayerInteractEvent e) {
+		if (e.getClickedBlock() != null) {
+			if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
+				if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+					if (e.getPlayer().isSneaking() == false) {
+						e.setCancelled(true);
+						enderchest.getEnderChestUtils().openMenu(e.getPlayer());
 					} else {
-						if (hasItemInHand(e.getPlayer().getInventory().getItemInMainHand()) == false && hasItemInHand(e.getPlayer().getInventory().getItemInOffHand()) == false) {
-							e.setCancelled(true);
-							enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+						if (EnderChest.is19Server == false) {
+							if (hasItemInHand(e.getPlayer().getItemInHand()) == false) {
+								e.setCancelled(true);
+								enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+							}
+						} else {
+							if (hasItemInHand(e.getPlayer().getInventory().getItemInMainHand()) == false && hasItemInHand(e.getPlayer().getInventory().getItemInOffHand()) == false) {
+								e.setCancelled(true);
+								enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+							}
 						}
 					}
 				}
