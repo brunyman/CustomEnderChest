@@ -112,7 +112,7 @@ public class FlatFileStorage implements StorageInterface {
 		
 		//Save enderchest inventory data only from uuid
 		@Override
-		public boolean saveEnderChest(UUID p, Player p2, Inventory inv) {
+		public boolean saveEnderChest(UUID p, Inventory inv) {
 			for (int i = 0; i < inv.getSize(); i++) {
 				ItemStack item = inv.getContents()[i];
 				saveInventory(p, i, item);

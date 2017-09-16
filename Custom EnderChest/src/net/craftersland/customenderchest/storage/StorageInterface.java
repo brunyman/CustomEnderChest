@@ -11,7 +11,7 @@ public interface StorageInterface {
     public boolean hasDataFile(UUID playerUUID);
     public boolean deleteDataFile(UUID playerUUID);
 	public boolean saveEnderChest(Player p, Inventory inv);
-	public boolean saveEnderChest(UUID p, Player p2, Inventory inv);
+	public boolean saveEnderChest(UUID p, Inventory inv);
 	public boolean loadEnderChest(Player p, Inventory inv);
 	public boolean loadEnderChest(UUID playerUUID, Inventory inv);
 	public String loadName(UUID playerUUID);

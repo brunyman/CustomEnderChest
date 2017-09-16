@@ -1,5 +1,5 @@
 # default config.yml for CustomEnderChest
-# config version 1.6.6
+# config version 1.7.0
 
 #Database settings
 database:
@@ -27,6 +27,8 @@ settings:
     #Add NBT data support for modded items. Requires MySQL storage and ProtocolLib dependency installed.
     #NOTE!!! - Changes to this setting needs a server restart!
     modded-NBT-data-support: false
+    #Disable click the enderchest to open the custom enderchest. (Useful if you only want to open it with the command)
+    disable-enderchest-click: false
 
 #Customize Ender Chest Title
 enderChestTitle:

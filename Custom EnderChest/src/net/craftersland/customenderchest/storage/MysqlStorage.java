@@ -100,19 +100,17 @@ public class MysqlStorage implements StorageInterface {
 	}
 	
 	@Override
-	public boolean saveEnderChest(UUID uuid, Player p, Inventory endInv) {
-		if (!hasDataFile(uuid)) {
-			createAccount(uuid, p);
-		}
+	public boolean saveEnderChest(UUID uuid, Inventory endInv) {
+		/*if (!hasDataFile(uuid)) {
+			createAccount(uuid, uuid.toString());
+		}*/
 		PreparedStatement preparedUpdateStatement = null;
 		try {        	
-			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `player_name` = ?" + ", `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_uuid` = ?";
+			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `enderchest_data` = ?" + ", `size` = ?" + " WHERE `player_uuid` = ?";
 			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
-			preparedUpdateStatement.setString(1, p.getName() + "");
-			preparedUpdateStatement.setString(2, encodeInventory(endInv, p.getName()));
-			preparedUpdateStatement.setInt(3, endInv.getSize());
-			preparedUpdateStatement.setString(4, String.valueOf(System.currentTimeMillis()));
-			preparedUpdateStatement.setString(5, uuid.toString() + "");
+			preparedUpdateStatement.setString(1, encodeInventory(endInv, uuid.toString()));
+			preparedUpdateStatement.setInt(2, endInv.getSize());
+			preparedUpdateStatement.setString(3, uuid.toString() + "");
 			preparedUpdateStatement.executeUpdate();
 			return true;
 		} catch (SQLException e) {

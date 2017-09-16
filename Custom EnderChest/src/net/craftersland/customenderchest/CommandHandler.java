@@ -47,14 +47,15 @@ private EnderChest enderchest;
 									}
 									enderchest.getEnderChestUtils().openMenu(p);
 									return true;
+								} else {
+									enderchest.getSoundHandler().sendFailedSound(p);
+									enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 								}
-								if (p.hasPermission("CustomEnderChest.admin")) {
+								/*if (p.hasPermission("CustomEnderChest.admin")) {
 									enderchest.getSoundHandler().sendFailedSound(p);
 									enderchest.getConfigHandler().printMessage(p, "chatMessages.openCmdUsage");
 									return false;
-								}
-								enderchest.getSoundHandler().sendFailedSound(p);
-								enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+								}*/
 								return false;
 							} else {
 								sender.sendMessage(ChatColor.DARK_RED + ">> " + ChatColor.RED + "You can't run this command by console!");
@@ -133,8 +134,8 @@ private EnderChest enderchest;
 										}
 										Inventory inv = enderchest.getDataHandler().getData(target.getUniqueId());
 										enderchest.getSoundHandler().sendEnderchestOpenSound(p);
-										p.openInventory(inv);
 										enderchest.admin.put(inv, target.getUniqueId());
+										p.openInventory(inv);
 										return true;
 								        }
 								    } else {
@@ -150,8 +151,8 @@ private EnderChest enderchest;
 											Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
 											enderchest.getStorageInterface().loadEnderChest(targetUUID, inv);
 											enderchest.getSoundHandler().sendEnderchestOpenSound(p);
-											p.openInventory(inv);
 											enderchest.admin.put(inv, targetUUID);
+											p.openInventory(inv);
 											return true;
 								    	} catch (Exception e) {
 								    		enderchest.getSoundHandler().sendFailedSound(p);
