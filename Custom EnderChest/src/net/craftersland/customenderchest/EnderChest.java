@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import net.craftersland.customenderchest.commands.FileToMysqlCmd;
 import net.craftersland.customenderchest.storage.FlatFileStorage;
 import net.craftersland.customenderchest.storage.MysqlSetup;
 import net.craftersland.customenderchest.storage.MysqlStorage;
@@ -33,6 +34,7 @@ public class EnderChest extends JavaPlugin {
 	private static MysqlSetup mysqlSetup;
 	private static SoundHandler sH;
 	private static ModdedSerializer ms;
+	private static FileToMysqlCmd ftmc;
 	
 		public void onEnable() {
 			log = getLogger();
@@ -54,6 +56,7 @@ public class EnderChest extends JavaPlugin {
 		      	storageInterface = new FlatFileStorage(this);	
 	        }
 	        sH = new SoundHandler(this);
+	        ftmc = new FileToMysqlCmd(this);
 	    	PluginManager pm = getServer().getPluginManager();
 	    	pm.registerEvents(new PlayerHandler(this), this);
 	    	CommandHandler cH = new CommandHandler(this);
@@ -121,6 +124,9 @@ public class EnderChest extends JavaPlugin {
 		}
 		public ModdedSerializer getModdedSerializer() {
 			return ms;
+		}
+		public FileToMysqlCmd getFileToMysqlCmd() {
+			return ftmc;
 		}
 
 }

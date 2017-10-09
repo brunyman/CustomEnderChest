@@ -21,7 +21,7 @@ private EnderChest enderchest;
 	
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command command, final String cmdlabel, final String[] args) {
-		final Player p;
+		Player p = null;
 
 			if (cmdlabel.equalsIgnoreCase("customec") || cmdlabel.equalsIgnoreCase("customenderchest") || cmdlabel.equalsIgnoreCase("ec")) {
 				if (args.length == 0) {
@@ -33,8 +33,7 @@ private EnderChest enderchest;
 						sendConsoleHelp(sender);
 						return false;
 					}
-				}
-				if (args.length == 1) {
+				} else if (args.length == 1) {
 						if (args[0].equalsIgnoreCase("open")) {
 							if (sender instanceof Player) {
 								p = (Player) sender;
@@ -61,65 +60,72 @@ private EnderChest enderchest;
 								sender.sendMessage(ChatColor.DARK_RED + ">> " + ChatColor.RED + "You can't run this command by console!");
 								return false;
 							}
-					    }
-					if (args[0].equalsIgnoreCase("delete")) {
-						if (sender instanceof Player) {
-							p = (Player) sender;
-							if (p.hasPermission("CustomEnderChest.admin")) {
+					    } else if (args[0].equalsIgnoreCase("importfromflatfile")) {
+					    	if (sender instanceof Player) {
+					    		p = (Player) sender;
+					    		if (p.hasPermission("CustomEnderChest.admin") == false) {
+					    			enderchest.getSoundHandler().sendFailedSound(p);
+									enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+									return true;
+					    		}
+					    	}
+					    	enderchest.getFileToMysqlCmd().runCmd(sender, false);
+					    } else if (args[0].equalsIgnoreCase("delete")) {
+					    	if (sender instanceof Player) {
+					    		p = (Player) sender;
+					    		if (p.hasPermission("CustomEnderChest.admin")) {
+					    			enderchest.getSoundHandler().sendFailedSound(p);
+					    			enderchest.getConfigHandler().printMessage(p, "chatMessages.deleteCmdUsage");
+					    			return true;
+					    		}
+					    		enderchest.getSoundHandler().sendFailedSound(p);
+					    		enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+					    		return true;
+					    	} else {
+					    		sender.sendMessage(ChatColor.DARK_RED + ">> " + ChatColor.RED + "Usage example: " + ChatColor.GRAY + "/customec delete John" + ChatColor.RED + " or " + ChatColor.GRAY + "/customec delete f694517d-d6cf-32f1-972b-dfc677ceac45");
+					    		return true;
+					    	}
+					} else if (args[0].equalsIgnoreCase("reload")) {
+							if (sender instanceof Player) {
+								p = (Player) sender;
+								if (p.hasPermission("CustomEnderChest.admin")) {
+									try {
+										enderchest.getConfig().load(new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"config.yml"));
+									} catch (Exception e) {
+										enderchest.getConfigHandler().printMessage(p, "chatMessages.reloadFail");
+										enderchest.getSoundHandler().sendFailedSound(p);
+										e.printStackTrace();
+										return true;
+									}
+									enderchest.getSoundHandler().sendCompleteSound(p);
+									enderchest.getConfigHandler().printMessage(p, "chatMessages.reload");
+									return true;
+								}
 								enderchest.getSoundHandler().sendFailedSound(p);
-								enderchest.getConfigHandler().printMessage(p, "chatMessages.deleteCmdUsage");
-								return false;
-							}
-							enderchest.getSoundHandler().sendFailedSound(p);
-							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
-							return false;
-						} else {
-							sender.sendMessage(ChatColor.DARK_RED + ">> " + ChatColor.RED + "Usage example: " + ChatColor.GRAY + "/customec delete John" + ChatColor.RED + " or " + ChatColor.GRAY + "/customec delete f694517d-d6cf-32f1-972b-dfc677ceac45");
-							return true;
-						}
-					}
-					if (args[0].equalsIgnoreCase("reload")) {
-						if (sender instanceof Player) {
-							p = (Player) sender;
-							if (p.hasPermission("CustomEnderChest.admin")) {
+								enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+								return true;
+							} else {
 								try {
 									enderchest.getConfig().load(new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"config.yml"));
 								} catch (Exception e) {
-									enderchest.getConfigHandler().printMessage(p, "chatMessages.reloadFail");
-									enderchest.getSoundHandler().sendFailedSound(p);
+									sender.sendMessage(ChatColor.DARK_RED + "" + ChatColor.BOLD + ">> " + ChatColor.RED + "Could not load config! Check logs!");
 									e.printStackTrace();
 									return false;
 								}
-								enderchest.getSoundHandler().sendCompleteSound(p);
-								enderchest.getConfigHandler().printMessage(p, "chatMessages.reload");
+								sender.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + ">> " + ChatColor.GREEN + "Configuration reloaded!");
 								return true;
 							}
-							enderchest.getSoundHandler().sendFailedSound(p);
-							enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+					} else {
+						if (sender instanceof Player) {
+							p = (Player) sender;
+							sendHelp(p);
 							return false;
 						} else {
-							try {
-								enderchest.getConfig().load(new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"config.yml"));
-							} catch (Exception e) {
-								sender.sendMessage(ChatColor.DARK_RED + "" + ChatColor.BOLD + ">> " + ChatColor.RED + "Could not load config! Check logs!");
-								e.printStackTrace();
-								return false;
-							}
-							sender.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + ">> " + ChatColor.GREEN + "Configuration reloaded!");
-							return true;
+							sendConsoleHelp(sender);
+							return false;
 						}
 					}
-					if (sender instanceof Player) {
-						p = (Player) sender;
-						sendHelp(p);
-						return false;
-					} else {
-						sendConsoleHelp(sender);
-						return false;
-					}
-				}
-				
-				if (args.length == 2) {
+				} else if (args.length == 2) {
 					if (args[0].equalsIgnoreCase("open")) {
 						if (sender instanceof Player) {
 							p = (Player) sender;
@@ -168,8 +174,21 @@ private EnderChest enderchest;
 							sender.sendMessage(ChatColor.DARK_RED + ">> " + ChatColor.RED + "You can't run this command by console!");
 							return false;
 						}
-					}
-					if (args[0].equalsIgnoreCase("delete")) {
+					} else if (args[0].equalsIgnoreCase("importfromflatfile")) {
+						if (args[1].equalsIgnoreCase("overwrite")) {
+							if (sender instanceof Player) {
+					    		p = (Player) sender;
+					    		if (p.hasPermission("CustomEnderChest.admin") == false) {
+					    			enderchest.getSoundHandler().sendFailedSound(p);
+									enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+									return true;
+					    		}
+					    	}
+					    	enderchest.getFileToMysqlCmd().runCmd(sender, true);
+						} else {
+							sender.sendMessage("Usage: /customec importfromflatfile overwrite");
+						}
+				    } else if (args[0].equalsIgnoreCase("delete")) {
 						if (sender instanceof Player) {
 							p = (Player) sender;
 							if (p.hasPermission("CustomEnderChest.admin")) {
@@ -237,14 +256,15 @@ private EnderChest enderchest;
 								}
 							}
 						}
-					}
-					if (sender instanceof Player) {
-						p = (Player) sender;
-						sendHelp(p);
-						return false;
 					} else {
-						sendConsoleHelp(sender);
-						return false;
+						if (sender instanceof Player) {
+							p = (Player) sender;
+							sendHelp(p);
+							return false;
+						} else {
+							sendConsoleHelp(sender);
+							return false;
+						}
 					}
 				}
 			}

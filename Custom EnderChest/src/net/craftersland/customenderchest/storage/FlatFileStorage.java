@@ -16,9 +16,6 @@ public class FlatFileStorage implements StorageInterface {
 	
     private EnderChest enderchest;
 	
-	File dataFile;
-	FileConfiguration ymlFormat;
-	
 	public FlatFileStorage(EnderChest enderchest) {
 		this.enderchest = enderchest;
 		
@@ -33,7 +30,7 @@ public class FlatFileStorage implements StorageInterface {
 		//Create a data file if there is none
 		public boolean createDataFile(UUID playerUUID, Player player) {
 			try {
-				dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
+				File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
 				if (!dataFile.exists())	{
 					dataFile.createNewFile();
 					FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
@@ -61,7 +58,7 @@ public class FlatFileStorage implements StorageInterface {
 			}
 			
 			try {
-				dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
+				File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
 				FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 				String playerName = player.getName();
 				ymlFormat.set("PlayerLastName", playerName);
@@ -85,7 +82,7 @@ public class FlatFileStorage implements StorageInterface {
 		public boolean saveInventory(UUID playerUUID, Integer size, ItemStack inventory) {
 		
 			try {
-				dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
+				File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
 				FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 				
 				ymlFormat.set("EnderChestInventory." + size, inventory);
@@ -126,11 +123,10 @@ public class FlatFileStorage implements StorageInterface {
 			if (!hasDataFile(p.getUniqueId())) {
 				createDataFile(p.getUniqueId(), p);
 			}
-			
+			File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", p.getUniqueId() + ".yml");
+			FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 			ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 			for (int i = 0; i < inv.getSize(); i++) {
-				dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", p.getUniqueId() + ".yml");
-				FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 				ItemStack item = ymlFormat.getItemStack("EnderChestInventory." + i);
 				items.add(item);
 			}
@@ -143,11 +139,10 @@ public class FlatFileStorage implements StorageInterface {
 		//load enderchest inventory data by uuid
 		@Override
 		public boolean loadEnderChest(UUID playerUUID, Inventory inv){
-						
+			File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
+			FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 			ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 			for (int i = 0; i < inv.getSize(); i++) {
-				dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
-				FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 				ItemStack item = ymlFormat.getItemStack("EnderChestInventory." + i);
 				items.add(item);
 			}
@@ -163,7 +158,7 @@ public class FlatFileStorage implements StorageInterface {
 			if (!hasDataFile(playerUUID)) {
 				return null;
 			}
-			dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
+			File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
 			FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 			String name = ymlFormat.getString("PlayerLastName");
 			return name;
@@ -175,7 +170,7 @@ public class FlatFileStorage implements StorageInterface {
 			if (!hasDataFile(playerUUID)) {
 				return 0;
 			}
-			dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
+			File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
 			FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 			Integer size = ymlFormat.getInt("EnderChestSize");
 			return size;
@@ -185,7 +180,7 @@ public class FlatFileStorage implements StorageInterface {
 		@Override
 		public boolean deleteDataFile(UUID playerUUID) {
 			try {
-				dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
+				File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", playerUUID + ".yml");
 				if (dataFile.exists())
 				{
 					dataFile.delete();
@@ -197,6 +192,12 @@ public class FlatFileStorage implements StorageInterface {
 				e.printStackTrace();
 			}
 			return false;
+		}
+
+		@Override
+		public void saveEnderChest(UUID uuid, Inventory endInv, String playerName, int invSize) {
+			// TODO Auto-generated method stub
+			
 		}
 
 }

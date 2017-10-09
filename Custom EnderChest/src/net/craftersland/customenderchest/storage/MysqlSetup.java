@@ -78,8 +78,10 @@ public class MysqlSetup {
             Properties properties = new Properties();
             properties.setProperty("user", enderchest.getConfigHandler().getString("database.mysql.user"));
             properties.setProperty("password", enderchest.getConfigHandler().getString("database.mysql.password"));
-            properties.setProperty("useSSL", "false");
             properties.setProperty("autoReconnect", "true");
+            properties.setProperty("verifyServerCertificate", "false");
+            properties.setProperty("useSSL", enderchest.getConfigHandler().getString("database.mysql.ssl"));
+            properties.setProperty("requireSSL", enderchest.getConfigHandler().getString("database.mysql.ssl"));
             
             //Connect to database
             conn = DriverManager.getConnection("jdbc:mysql://" + enderchest.getConfigHandler().getString("database.mysql.host") + ":" + enderchest.getConfigHandler().getString("database.mysql.port") + "/" + enderchest.getConfigHandler().getString("database.mysql.databaseName"), properties);

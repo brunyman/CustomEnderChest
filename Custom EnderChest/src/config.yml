@@ -1,5 +1,5 @@
 # default config.yml for CustomEnderChest
-# config version 1.7.0
+# config version 1.8.0
 
 #Database settings
 database:
@@ -13,6 +13,7 @@ database:
         tableName: 'cec_enderchests'
         user: 'admin'
         password: 'cheesecake'
+        ssl: false
         #This task will scan the mysql database for inactive players and remove them.
         #The scanning takes place after server starts with a 2min delay. Runs on a async thread so server performance will not be affected.
         removeOldUsers:
@@ -70,6 +71,10 @@ chatMessages:
     delete: '&dPlayer enderchest data removed!'
     reloadFail: '&dCould not load config! Check logs!'
     reload: '&dConfiguration reloaded!'
+    flatfileImport-mysql: '&dChange database type from flatfile to mysql first!'
+    flatfileImport-connection: '&dNo database connection found! Check logs and make sure the plugin is connected to the mysql database!'
+    flatfileImport-started: '&dImport task started! Check server console for progress.'
+    flatfileImport-datafolder: '&dThe PlayerData folder could not be found!'
     
     #Help command with multi line support.
     Help:

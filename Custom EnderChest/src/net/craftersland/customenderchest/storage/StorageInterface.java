@@ -16,5 +16,6 @@ public interface StorageInterface {
 	public boolean loadEnderChest(UUID playerUUID, Inventory inv);
 	public String loadName(UUID playerUUID);
 	public Integer loadSize(UUID playerUUID);
+	public void saveEnderChest(UUID uuid, Inventory endInv, String playerName, int invSize);
 
 }

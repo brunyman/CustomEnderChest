@@ -128,6 +128,31 @@ public class MysqlStorage implements StorageInterface {
 	}
 	
 	@Override
+	public void saveEnderChest(UUID uuid, Inventory endInv, String playerName, int invSize) {
+		PreparedStatement preparedStatement = null;
+		try {			 
+	        String sql = "INSERT INTO `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "`(`player_uuid`, `player_name`, `enderchest_data`, `size`, `last_seen`) " + "VALUES(?, ?, ?, ?, ?)";
+	        preparedStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedStatement.setString(1, uuid.toString());
+	        preparedStatement.setString(2, playerName);
+	        preparedStatement.setString(3, encodeInventory(endInv, uuid.toString()));
+	        preparedStatement.setInt(4, invSize);
+	        preparedStatement.setString(5, String.valueOf(System.currentTimeMillis()));
+	        preparedStatement.executeUpdate();
+	      } catch (SQLException e) {
+	        e.printStackTrace();
+	      } finally {
+				try {
+					if (preparedStatement != null) {
+						preparedStatement.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		  }
+	}
+	
+	@Override
 	public boolean saveEnderChest(Player p, Inventory endInv) {
 		if (!hasDataFile(p.getUniqueId())) {
 			createAccount(p.getUniqueId(), p);
