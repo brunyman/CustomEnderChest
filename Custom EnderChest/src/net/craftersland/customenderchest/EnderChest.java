@@ -45,11 +45,11 @@ public class EnderChest extends JavaPlugin {
 		enderchestUtils = new EnderChestUtils(this);
 		dH = new DataHandler();
 		if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql") == true) {
-	        log.info("Using MySQL database for data.");
+			log.info("Using MySQL database for data.");
 	        mysqlSetup = new MysqlSetup(this);
 	        storageInterface = new MysqlStorage(this);
 		} else {
-	        log.info("Using FlatFile system for data.");
+			log.info("Using FlatFile system for data.");
 	        File pluginFolder = new File("plugins" + System.getProperty("file.separator") + pluginName + System.getProperty("file.separator") + "PlayerData");
 	    	if (!pluginFolder.exists()) {
 	        	pluginFolder.mkdir();
@@ -119,10 +119,6 @@ public class EnderChest extends JavaPlugin {
 
 	public MysqlSetup getMysqlSetup() {
 		return mysqlSetup;
-	}
-
-	public SoundHandler getSoundHandler() {
-		return sH;
 	}
 
 	public DataHandler getDataHandler() {
