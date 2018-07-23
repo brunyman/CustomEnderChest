@@ -18,21 +18,21 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class PlayerHandler implements Listener {
-	
+
     private EnderChest enderchest;
     private Set<UUID> interactCooldown = new HashSet<UUID>();
-	
+
 	public PlayerHandler(EnderChest enderchest) {
 		this.enderchest = enderchest;
 	}
-	
+
 	@EventHandler
 	public void onPlayerJoinEvent(final PlayerJoinEvent e) {
 		Bukkit.getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
 
 			@Override
 			public void run() {
-				if (e.getPlayer().isOnline() == true) {
+				if (e.getPlayer().isOnline()) {
 					int size = enderchest.getEnderChestUtils().getSize(e.getPlayer());
 					if (size == 0) {
 						size = 9;
@@ -48,13 +48,12 @@ public class PlayerHandler implements Listener {
 			
 		});
 	}
-	
+
 	@EventHandler
 	public void onPlayerDisconnectEvent(PlayerQuitEvent e) {
 		enderchest.getDataHandler().removeData(e.getPlayer().getUniqueId());
 	}
-	
-	//Player click event
+
 	@EventHandler
 	public void onPlayerInteract(final PlayerInteractEvent e) {
 		if (e.getClickedBlock() != null) {
@@ -87,7 +86,7 @@ public class PlayerHandler implements Listener {
 			}
 		}
 	}
-	
+
 	private void addInteractCooldown(final UUID u) {
 		interactCooldown.add(u);
 		Bukkit.getScheduler().runTaskLaterAsynchronously(enderchest, new Runnable() {
@@ -99,7 +98,7 @@ public class PlayerHandler implements Listener {
 			
 		}, 2L);
 	}
-	
+
 	private boolean hasItemInHand(ItemStack item) {
 		if (item == null) {
 			return false;
@@ -110,7 +109,7 @@ public class PlayerHandler implements Listener {
 		}
 		return true;
 	}
-	
+
 	private void saveEnderchest(final Inventory inv, final Player p, final UUID u) {
 		Bukkit.getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
 
@@ -126,8 +125,7 @@ public class PlayerHandler implements Listener {
 			
 		});
 	}
-	
-	//Player inventory close event
+
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e) {
 		Player p = (Player) e.getPlayer();
@@ -135,7 +133,6 @@ public class PlayerHandler implements Listener {
 			if (e.getInventory() != null) {
 				try {
 					if (enderchest.getDataHandler().isLiveEnderchest(e.getInventory()) == true) {
-						enderchest.getSoundHandler().sendEnderchestCloseSound(p);
 						if (enderchest.admin.containsKey(e.getInventory()) == true) {
 							UUID u = enderchest.admin.get(e.getInventory());
 							if (u.equals(e.getPlayer().getUniqueId()) == false) {
@@ -148,13 +145,12 @@ public class PlayerHandler implements Listener {
 							saveEnderchest(e.getInventory(), (Player) e.getPlayer(), null);
 						}
 					} else if (enderchest.admin.containsKey(e.getInventory()) == true) {
-						enderchest.getSoundHandler().sendEnderchestCloseSound(p);
 						saveEnderchest(e.getInventory(), (Player) e.getPlayer(), enderchest.admin.get(e.getInventory()));
 						enderchest.admin.remove(e.getInventory());
 					}
 				} catch (Exception ex) {
-					EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + " . Error: " + ex.getMessage());
 					ex.printStackTrace();
+					EnderChest.log.severe("Error saving enderchest data for player: " + p.getName() + ", error: " + ex.getMessage());
 				}
 			}
 		}
