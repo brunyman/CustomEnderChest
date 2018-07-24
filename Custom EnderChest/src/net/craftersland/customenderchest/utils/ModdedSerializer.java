@@ -10,13 +10,13 @@ import com.comphenix.protocol.utility.StreamSerializer;
 import net.craftersland.customenderchest.EnderChest;
 
 public class ModdedSerializer {
-	
+
 	private EnderChest pl;
-	
+
 	public ModdedSerializer(EnderChest pl) {
 		this.pl = pl;
 	}
-	
+
 	public String toBase64(ItemStack[] itemStacks) throws IOException {
 		StringBuilder stringBuilder = new StringBuilder();
 	    for (int i = 0; i < itemStacks.length; i++) {
@@ -29,7 +29,7 @@ public class ModdedSerializer {
 	    }
 	    return stringBuilder.toString();
     }
-	
+
 	public ItemStack[] fromBase64(String data) throws IOException {
 		String[] strings = data.split(";");
 	    ItemStack[] itemStacks = new ItemStack[strings.length];
