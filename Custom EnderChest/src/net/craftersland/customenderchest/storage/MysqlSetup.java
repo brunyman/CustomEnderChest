@@ -13,22 +13,22 @@ import org.bukkit.Bukkit;
 import net.craftersland.customenderchest.EnderChest;
 
 public class MysqlSetup {
-	
+
 	private Connection conn = null;
 	private EnderChest enderchest;
 	private boolean tablesChecked = false;
-	
+
 	public MysqlSetup(EnderChest enderchest) {
 		this.enderchest = enderchest;
 		setupDatabase();
 		updateTables();
 	}
-	
+
 	public void setupDatabase() {
 		connectToDatabase();
 		databaseMaintenanceTask();
 	}
-	
+
 	private void tableMaintenance(long inactiveTime, Connection conn, String tableName) {
 		PreparedStatement preparedStatement = null;
 		try {
@@ -48,9 +48,9 @@ public class MysqlSetup {
 			}
 		}
 	}
-	
+
 	private void databaseMaintenanceTask() {
-		if (enderchest.getConfigHandler().getBoolean("database.mysql.removeOldUsers.enabled") == true) {
+		if (enderchest.getConfigHandler().getBoolean("database.mysql.removeOldUsers.enabled")) {
 			Bukkit.getScheduler().runTaskLaterAsynchronously(enderchest, new Runnable() {
 
 				@Override
@@ -69,12 +69,12 @@ public class MysqlSetup {
 			}, 100 * 20L);
 		}
 	}
-	
+
 	private void connectToDatabase() {
 		try {
        	 	//Load Drivers
             Class.forName("com.mysql.jdbc.Driver");
-            
+
             Properties properties = new Properties();
             properties.setProperty("user", enderchest.getConfigHandler().getString("database.mysql.user"));
             properties.setProperty("password", enderchest.getConfigHandler().getString("database.mysql.password"));
@@ -82,23 +82,23 @@ public class MysqlSetup {
             properties.setProperty("verifyServerCertificate", "false");
             properties.setProperty("useSSL", enderchest.getConfigHandler().getString("database.mysql.ssl"));
             properties.setProperty("requireSSL", enderchest.getConfigHandler().getString("database.mysql.ssl"));
-            
+
             //Connect to database
             conn = DriverManager.getConnection("jdbc:mysql://" + enderchest.getConfigHandler().getString("database.mysql.host") + ":" + enderchest.getConfigHandler().getString("database.mysql.port") + "/" + enderchest.getConfigHandler().getString("database.mysql.databaseName"), properties);
             EnderChest.log.info("Database connection established!");
             if (tablesChecked == false) {
             	setupTables();
             }
-          } catch (ClassNotFoundException e) {
-        	  EnderChest.log.severe("Could not locate drivers for mysql! Error: " + e.getMessage());
-          } catch (SQLException e) {
-        	  EnderChest.log.severe("Could not connect to mysql database! Error: " + e.getMessage());
-          } catch (Exception ex) {
-        	  EnderChest.log.severe("Could not connect to mysql database! Error: " + ex.getMessage());
-        	  ex.printStackTrace();
-          }
+		} catch (ClassNotFoundException e) {
+			EnderChest.log.severe("Could not locate drivers for mysql! Error: " + e.getMessage());
+		} catch (SQLException e) {
+			EnderChest.log.severe("Could not connect to mysql database! Error: " + e.getMessage());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			EnderChest.log.severe("Could not connect to mysql database! Error: " + ex.getMessage());
+		}
 	}
-	
+
 	public void setupTables() {
 		if (conn != null) {
 			PreparedStatement query1 = null;
@@ -108,8 +108,8 @@ public class MysqlSetup {
 		        query1.execute();
 		        tablesChecked = true;
 			} catch (Exception e) {
-				EnderChest.log.severe("Error creating tables! Error: " + e.getMessage());
 				e.printStackTrace();
+				EnderChest.log.severe("Error creating tables! Error: " + e.getMessage());
 			} finally {
 				try {
 					if (query1 != null) {
@@ -121,12 +121,12 @@ public class MysqlSetup {
 			}
 		}
 	}
-	
+
 	public Connection getConnection() {
 		checkConnection();
 		return conn;
 	}
-	
+
 	public void closeConnection() {
 		try {
 			EnderChest.log.info("Closing database connection...");
@@ -138,7 +138,7 @@ public class MysqlSetup {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void checkConnection() {
 		try {
 			if (conn == null) {
@@ -158,7 +158,7 @@ public class MysqlSetup {
 			EnderChest.log.severe("Error re-connecting to the database! Error: " + e.getMessage());
 		}
 	}
-	
+
 	public boolean closeDatabase() {
 		try {
 			conn.close();
@@ -169,7 +169,7 @@ public class MysqlSetup {
 		}
 		return false;
 	}
-	
+
 	private void updateTables() {
 		if (conn != null) {
 			DatabaseMetaData md = null;
@@ -194,10 +194,10 @@ public class MysqlSetup {
 		            	}
 			    	}
 			    }    
-			    
+
 			} catch (Exception e) {
-				EnderChest.log.warning("Error on table update! Error: " + e.getMessage());
 				e.printStackTrace();
+				EnderChest.log.warning("Error on table update! Error: " + e.getMessage());
 			} finally {
 				try {
 	    			if (query1 != null) {
