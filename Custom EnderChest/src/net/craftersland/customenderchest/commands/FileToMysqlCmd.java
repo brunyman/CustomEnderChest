@@ -15,13 +15,13 @@ import org.bukkit.inventory.ItemStack;
 import net.craftersland.customenderchest.EnderChest;
 
 public class FileToMysqlCmd {
-	
+
 	private EnderChest pl;
-	
+
 	public FileToMysqlCmd(EnderChest plugin) {
 		this.pl = plugin;
 	}
-	
+
 	public void runCmd(final CommandSender sender, final boolean overwrite) {
 		if (pl.getConfigHandler().getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
     		if (pl.getMysqlSetup().getConnection() != null) {
@@ -86,7 +86,7 @@ public class FileToMysqlCmd {
 							}
 							EnderChest.log.info("Data import is complete!");
 						}
-			    		
+
 			    	});
     			} else {
     				sender.sendMessage(pl.getConfigHandler().getStringWithColor("chatMessages.flatfileImport-datafolder"));

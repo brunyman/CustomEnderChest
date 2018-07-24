@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 public interface StorageInterface {
-	
+
 	//Storage Flat File data methods
     public boolean hasDataFile(UUID playerUUID);
     public boolean deleteDataFile(UUID playerUUID);

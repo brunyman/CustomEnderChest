@@ -14,14 +14,14 @@ import net.craftersland.customenderchest.EnderChest;
 import net.craftersland.customenderchest.utils.EncodingUtil;
 
 public class MysqlStorage implements StorageInterface {
-	
+
 	private EnderChest enderchest;
-	
+
 	public MysqlStorage(EnderChest enderchest) {
 		this.enderchest = enderchest;
 		
 	}
-	
+
 	@Override
 	public boolean hasDataFile(UUID player) {
 		ResultSet result = null;
@@ -34,23 +34,23 @@ public class MysqlStorage implements StorageInterface {
 	        while (result.next()) {
 	        	return true;
 	        }
-	      } catch (SQLException e) {
-	        e.printStackTrace();
-	      } finally {
-				try {
-					if (result != null) {
-						result.close();
-					}
-					if (preparedUpdateStatement != null) {
-						preparedUpdateStatement.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (result != null) {
+					result.close();
 				}
-		  }
-	      return false;
+				if (preparedUpdateStatement != null) {
+					preparedUpdateStatement.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
-	
+
 	@Override
 	public boolean deleteDataFile(UUID player) {
 		PreparedStatement preparedStatement = null;
@@ -63,16 +63,16 @@ public class MysqlStorage implements StorageInterface {
 		} catch (SQLException e) {
 	        return false;
 		} finally {
-				try {
-					if (preparedStatement != null) {
-						preparedStatement.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+			try {
+				if (preparedStatement != null) {
+					preparedStatement.close();
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
-	
+
 	public boolean createAccount(UUID uuid, Player p) {
 		PreparedStatement preparedStatement = null;
 		try {			 
@@ -88,22 +88,19 @@ public class MysqlStorage implements StorageInterface {
 	      } catch (SQLException e) {
 	        e.printStackTrace();
 	      } finally {
-				try {
-					if (preparedStatement != null) {
-						preparedStatement.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+			try {
+				if (preparedStatement != null) {
+					preparedStatement.close();
 				}
-		  }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean saveEnderChest(UUID uuid, Inventory endInv) {
-		/*if (!hasDataFile(uuid)) {
-			createAccount(uuid, uuid.toString());
-		}*/
 		PreparedStatement preparedUpdateStatement = null;
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `enderchest_data` = ?" + ", `size` = ?" + " WHERE `player_uuid` = ?";
@@ -126,7 +123,7 @@ public class MysqlStorage implements StorageInterface {
 	    }
         return false;
 	}
-	
+
 	@Override
 	public void saveEnderChest(UUID uuid, Inventory endInv, String playerName, int invSize) {
 		PreparedStatement preparedStatement = null;
@@ -142,16 +139,16 @@ public class MysqlStorage implements StorageInterface {
 	      } catch (SQLException e) {
 	        e.printStackTrace();
 	      } finally {
-				try {
-					if (preparedStatement != null) {
-						preparedStatement.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+			try {
+				if (preparedStatement != null) {
+					preparedStatement.close();
 				}
-		  }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
+
 	@Override
 	public boolean saveEnderChest(Player p, Inventory endInv) {
 		if (!hasDataFile(p.getUniqueId())) {
@@ -181,7 +178,7 @@ public class MysqlStorage implements StorageInterface {
 	    }
         return false;
 	}
-	
+
 	@Override
 	public boolean loadEnderChest(UUID uuid, Inventory endInv) {
 		if (!hasDataFile(uuid)) {
@@ -209,20 +206,20 @@ public class MysqlStorage implements StorageInterface {
 	      } catch (SQLException e) {
 	        e.printStackTrace();
 	      } finally {
-				try {
-					if (result != null) {
-						result.close();
-					}
-					if (preparedUpdateStatement != null) {
-						preparedUpdateStatement.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+			try {
+				if (result != null) {
+					result.close();
 				}
-		  }
+				if (preparedUpdateStatement != null) {
+					preparedUpdateStatement.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean loadEnderChest(Player p, Inventory endInv) {
 		if (!hasDataFile(p.getUniqueId())) {
@@ -238,12 +235,12 @@ public class MysqlStorage implements StorageInterface {
 	        while (result.next()) {
 	        	try {
 	        		Inventory mysqlInv = decodeInventory(result.getString("enderchest_data"), p.getName(), result.getInt("size"));
-	        		
+
 	        		for (int i = 0; i < endInv.getSize(); i++) {
 	        			ItemStack item = mysqlInv.getItem(i);
 	        			endInv.setItem(i, item);
 	                }
-	        		
+
 		        	//endInv.setContents(mysqlInv.getContents());
 		        	return true;
 	        	} catch (Exception e) {
@@ -251,7 +248,6 @@ public class MysqlStorage implements StorageInterface {
 	        	}
 	        }
 	      } catch (SQLException e) {
-	        //e.printStackTrace();
 	      } finally {
 				try {
 					if (result != null) {
@@ -266,7 +262,7 @@ public class MysqlStorage implements StorageInterface {
 		  }
 		return false;
 	}
-	
+
 	private Inventory decodeInventory(String rawData, String playerName, int chestSize) {
 		if (enderchest.getModdedSerializer() != null) {
 			try {
@@ -293,7 +289,7 @@ public class MysqlStorage implements StorageInterface {
 		}
 		return null;
 	}
-	
+
 	private String encodeInventory(Inventory inv, String playerName) {
 		if (enderchest.getModdedSerializer() != null) {
 			try {
@@ -312,7 +308,7 @@ public class MysqlStorage implements StorageInterface {
 		}
 		return null;
 	}
-	
+
 	public String loadName(UUID uuid) {
 		if (!hasDataFile(uuid)) {
 			createAccount(uuid, null);
@@ -326,24 +322,24 @@ public class MysqlStorage implements StorageInterface {
 	        result = preparedUpdateStatement.executeQuery();
 	        while (result.next()) {
 	        	return result.getString("player_name");
-	        }
-	      } catch (SQLException e) {
-	        e.printStackTrace();
-	      } finally {
-				try {
-					if (result != null) {
-						result.close();
-					}
-					if (preparedUpdateStatement != null) {
-						preparedUpdateStatement.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (result != null) {
+					result.close();
 				}
-		  }
+				if (preparedUpdateStatement != null) {
+					preparedUpdateStatement.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
-	
+
 	public Integer loadSize(UUID uuid) {
 		if (!hasDataFile(uuid)) {
 			createAccount(uuid, null);
@@ -358,23 +354,21 @@ public class MysqlStorage implements StorageInterface {
 	        while (result.next()) {
 	        	return result.getInt("size");
 	        }
-	      } catch (SQLException e) {
-	        e.printStackTrace();
-	      } finally {
-				try {
-					if (result != null) {
-						result.close();
-					}
-					if (preparedUpdateStatement != null) {
-						preparedUpdateStatement.close();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (result != null) {
+					result.close();
 				}
-		  }
+				if (preparedUpdateStatement != null) {
+					preparedUpdateStatement.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
-	
-	
 
 }
