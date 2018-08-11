@@ -25,6 +25,7 @@ public class EnderChest extends JavaPlugin {
 	public static Logger log;
 	public Map<Inventory, UUID> admin = new HashMap<Inventory, UUID>();
 	public static boolean is19Server = true;
+	public static boolean is13Server = false;
 	public static String pluginName = "CustomEnderChest";
 	
 	private static ConfigHandler configHandler;
@@ -48,7 +49,7 @@ public class EnderChest extends JavaPlugin {
 	        	mysqlSetup = new MysqlSetup(this);
 	        	storageInterface = new MysqlStorage(this);
 	        } else {
-	        	log.info("Using FlatFile system for data.");
+	        	log.info("Using FlatFile system for data. IMPORTANT! We recommend MySQL.");
 	        	File pluginFolder = new File("plugins" + System.getProperty("file.separator") + pluginName + System.getProperty("file.separator") + "PlayerData");
 	    		if (pluginFolder.exists() == false) {
 	        		pluginFolder.mkdir();
@@ -84,6 +85,11 @@ public class EnderChest extends JavaPlugin {
 		    
 		    if (version.matches("1.7.10") || version.matches("1.7.9") || version.matches("1.7.5") || version.matches("1.7.2") || version.matches("1.8.8") || version.matches("1.8.3") || version.matches("1.8.4") || version.matches("1.8")) {
 		    	is19Server = false;
+		    	return true;
+		    }
+		    if (version.matches("1.13")) {
+		    	is19Server = true;
+		    	is13Server = true;
 		    	return true;
 		    }
 		    return false;

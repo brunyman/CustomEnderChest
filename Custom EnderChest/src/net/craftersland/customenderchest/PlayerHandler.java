@@ -11,9 +11,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,6 +26,23 @@ public class PlayerHandler implements Listener {
 	
 	public PlayerHandler(EnderChest enderchest) {
 		this.enderchest = enderchest;
+	}
+	
+	@EventHandler
+	public void onCmd(ServerCommandEvent event) {
+		if (event.getCommand().matches("reload")) {
+			event.setCancelled(true);
+			event.getSender().sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.reloadCmdBlocked"));
+		}
+	}
+	
+	@EventHandler
+	public void onCmd(PlayerCommandPreprocessEvent event) {
+		if (event.getMessage().matches("/reload")) {
+			event.setCancelled(true);
+			enderchest.getSoundHandler().sendFailedSound(event.getPlayer());
+			event.getPlayer().sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.reloadCmdBlocked"));
+		}
 	}
 	
 	@EventHandler

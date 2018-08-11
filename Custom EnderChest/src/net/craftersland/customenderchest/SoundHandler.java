@@ -29,24 +29,30 @@ public class SoundHandler {
 	}
 	
 	public void sendEnderchestCloseSound(Player p) {
-		if (EnderChest.is19Server == true) {
-			p.playSound(p.getLocation(), Sound.BLOCK_ENDERCHEST_CLOSE, 1F, 1F);
+		if (EnderChest.is13Server == true) {
+			p.playSound(p.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1F, 1F);
+		} else if (EnderChest.is19Server == true) {
+			p.playSound(p.getLocation(), Sound.valueOf("BLOCK_ENDERCHEST_CLOSE"), 1F, 1F);
 		} else {
 			p.playSound(p.getLocation(), Sound.valueOf("CHEST_CLOSE"), 1F, 1F);
 		}
 	}
 	
 	public void sendEnderchestOpenSound(Player p) {
-		if (EnderChest.is19Server == true) {
-			p.playSound(p.getLocation(), Sound.BLOCK_ENDERCHEST_OPEN, 1F, 1F);
+		if (EnderChest.is13Server == true) {
+			p.playSound(p.getLocation(), Sound.BLOCK_ENDER_CHEST_OPEN, 1F, 1F);
+		} else if (EnderChest.is19Server == true) {
+			p.playSound(p.getLocation(), Sound.valueOf("BLOCK_ENDERCHEST_OPEN"), 1F, 1F);
 		} else {
 			p.playSound(p.getLocation(), Sound.valueOf("CHEST_OPEN"), 1F, 1F);
 		}
 	}
 	
 	public void sendFailedSound(Player p) {
-		if (EnderChest.is19Server == true) {
-			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 3F, 3F);
+		if (EnderChest.is13Server == true) {
+			p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 3F, 3F);
+		} else if (EnderChest.is19Server == true) {
+			p.playSound(p.getLocation(), Sound.valueOf("BLOCK_NOTE_PLING"), 3F, 3F);
 		} else {
 			p.playSound(p.getLocation(), Sound.valueOf("NOTE_PLING"), 3F, 3F);
 		}

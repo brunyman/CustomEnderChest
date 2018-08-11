@@ -112,17 +112,19 @@ public class EnderChestUtils {
 		} else if (inv.getSize() != size) {
 			String enderChestTitle = enderchest.getEnderChestUtils().getTitle(p);
 			Inventory newInv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
-			int toScan;
 			if (size > inv.getSize()) {
-				toScan = inv.getSize();
+				//TODO run this async to prevent tps drops on slow connections
+				if (enderchest.getStorageInterface().hasDataFile(p.getUniqueId()) == true) {
+					enderchest.getStorageInterface().loadEnderChest(p, newInv);
+				}
+				inv = newInv;
 			} else {
-				toScan = size;
+				for (int i = 0; i < size; i++) {
+	    			ItemStack item = inv.getItem(i);
+	    			newInv.setItem(i, item);
+	            }
+				inv = newInv;
 			}
-			for (int i = 0; i < toScan; i++) {
-    			ItemStack item = inv.getItem(i);
-    			newInv.setItem(i, item);
-            }
-			inv = newInv;
 		}
 		enderchest.getDataHandler().setData(p.getUniqueId(), inv);
 		enderchest.getSoundHandler().sendEnderchestOpenSound(p);

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import net.craftersland.customenderchest.EnderChest;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -100,9 +101,37 @@ public class FlatFileStorage implements StorageInterface {
 		//Save enderchest inventory and all data from name
 		@Override
 		public boolean saveEnderChest(Player p, Inventory inv) {
-			for (int i = 0; i < inv.getSize(); i++) {
-				ItemStack item = inv.getContents()[i];
-				saveInventory(p.getUniqueId(), p, i, item);
+			File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", p.getUniqueId() + ".yml");
+			if (dataFile.exists()) {
+				int storageSize = loadSize(p.getUniqueId());
+				Inventory storageInv = Bukkit.getServer().createInventory(null, storageSize);
+				FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
+				ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+				for (int i = 0; i < storageSize; i++) {
+					ItemStack item = ymlFormat.getItemStack("EnderChestInventory." + i);
+					items.add(item);
+				}
+				ItemStack[] itemsList = (ItemStack[])items.toArray(new ItemStack[items.size()]);
+				storageInv.setContents(itemsList);
+				if (inv.getSize() >= storageSize) {
+					for (int i = 0; i < inv.getSize(); i++) {
+						ItemStack item = inv.getContents()[i];
+						saveInventory(p.getUniqueId(), p, i, item);
+					}
+				} else {
+					for (int i = 0; i < inv.getSize(); i++) {
+						storageInv.setItem(i, inv.getItem(i));
+					}
+					for (int i = 0; i < storageInv.getSize(); i++) {
+						ItemStack item = storageInv.getContents()[i];
+						saveInventory(p.getUniqueId(), p, i, item);
+					}
+				}
+			} else {
+				for (int i = 0; i < inv.getSize(); i++) {
+					ItemStack item = inv.getContents()[i];
+					saveInventory(p.getUniqueId(), p, i, item);
+				}
 			}
 			return true;
 		}
@@ -110,9 +139,37 @@ public class FlatFileStorage implements StorageInterface {
 		//Save enderchest inventory data only from uuid
 		@Override
 		public boolean saveEnderChest(UUID p, Inventory inv) {
-			for (int i = 0; i < inv.getSize(); i++) {
-				ItemStack item = inv.getContents()[i];
-				saveInventory(p, i, item);
+			File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", p + ".yml");
+			if (dataFile.exists()) {
+				int storageSize = loadSize(p);
+				Inventory storageInv = Bukkit.getServer().createInventory(null, storageSize);
+				FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
+				ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+				for (int i = 0; i < storageSize; i++) {
+					ItemStack item = ymlFormat.getItemStack("EnderChestInventory." + i);
+					items.add(item);
+				}
+				ItemStack[] itemsList = (ItemStack[])items.toArray(new ItemStack[items.size()]);
+				storageInv.setContents(itemsList);
+				if (inv.getSize() >= storageSize) {
+					for (int i = 0; i < inv.getSize(); i++) {
+						ItemStack item = inv.getContents()[i];
+						saveInventory(p, i, item);
+					}
+				} else {
+					for (int i = 0; i < inv.getSize(); i++) {
+						storageInv.setItem(i, inv.getItem(i));
+					}
+					for (int i = 0; i < storageInv.getSize(); i++) {
+						ItemStack item = storageInv.getContents()[i];
+						saveInventory(p, i, item);
+					}
+				}
+			} else {
+				for (int i = 0; i < inv.getSize(); i++) {
+					ItemStack item = inv.getContents()[i];
+					saveInventory(p, i, item);
+				}
 			}
 			return true;
 		}

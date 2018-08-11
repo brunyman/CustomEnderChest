@@ -1,10 +1,11 @@
 name: CustomEnderChest
 main: net.craftersland.customenderchest.EnderChest
-version: 1.8.0
+version: 1.9.0
 author: CraftersLand
 website: www.craftersland.net
 load: STARTUP
 softdepend: [ProtocolLib]
+api-version: 1.13
 commands:
     ec:
         description: The short command.

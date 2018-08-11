@@ -105,11 +105,21 @@ public class MysqlStorage implements StorageInterface {
 			createAccount(uuid, uuid.toString());
 		}*/
 		PreparedStatement preparedUpdateStatement = null;
+		int storageSize = loadSize(uuid);
+		Inventory storageInv = decodeInventory(getEnderchestString(uuid), null, storageSize);
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `enderchest_data` = ?" + ", `size` = ?" + " WHERE `player_uuid` = ?";
 			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
-			preparedUpdateStatement.setString(1, encodeInventory(endInv, uuid.toString()));
-			preparedUpdateStatement.setInt(2, endInv.getSize());
+			if (endInv.getSize() >= storageSize) {
+				preparedUpdateStatement.setString(1, encodeInventory(endInv, uuid.toString()));
+				preparedUpdateStatement.setInt(2, endInv.getSize());
+			} else {
+				for (int i = 0; i < endInv.getSize(); i++) {
+					storageInv.setItem(i, endInv.getItem(i));
+				}
+				preparedUpdateStatement.setString(1, encodeInventory(storageInv, uuid.toString()));
+				preparedUpdateStatement.setInt(2, storageSize);
+			}
 			preparedUpdateStatement.setString(3, uuid.toString() + "");
 			preparedUpdateStatement.executeUpdate();
 			return true;
@@ -158,14 +168,24 @@ public class MysqlStorage implements StorageInterface {
 			createAccount(p.getUniqueId(), p);
 		}
 		PreparedStatement preparedUpdateStatement = null;
+		int storageSize = loadSize(p.getUniqueId());
+		Inventory storageInv = decodeInventory(getEnderchestString(p.getUniqueId()), p.getDisplayName(), storageSize);
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `player_name` = ?" + ", `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_uuid` = ?";
 			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
-			preparedUpdateStatement.setString(1, p.getName() + "");
-			preparedUpdateStatement.setString(2, encodeInventory(endInv, p.getName()));
-			preparedUpdateStatement.setInt(3, endInv.getSize());
+			preparedUpdateStatement.setString(1, p.getName());
+			if (endInv.getSize() >= storageSize) {
+				preparedUpdateStatement.setString(2, encodeInventory(endInv, p.getName()));
+				preparedUpdateStatement.setInt(3, endInv.getSize());
+			} else {
+				for (int i = 0; i < endInv.getSize(); i++) {
+					storageInv.setItem(i, endInv.getItem(i));
+				}
+				preparedUpdateStatement.setString(2, encodeInventory(storageInv, p.getName()));
+				preparedUpdateStatement.setInt(3, storageSize);
+			}
 			preparedUpdateStatement.setString(4, String.valueOf(System.currentTimeMillis()));
-			preparedUpdateStatement.setString(5, p.getUniqueId().toString() + "");
+			preparedUpdateStatement.setString(5, p.getUniqueId().toString());
 			preparedUpdateStatement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -310,6 +330,37 @@ public class MysqlStorage implements StorageInterface {
 				e.printStackTrace();
 			}
 		}
+		return null;
+	}
+	
+	public String getEnderchestString(UUID uuid) {
+		if (!hasDataFile(uuid)) {
+			createAccount(uuid, null);
+		}
+		PreparedStatement preparedUpdateStatement = null;
+		ResultSet result = null;
+		try {	 
+	        String sql = "SELECT `enderchest_data` FROM `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` WHERE `player_uuid` = ?";
+	        preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(sql);
+	        preparedUpdateStatement.setString(1, uuid.toString());
+	        result = preparedUpdateStatement.executeQuery();
+	        while (result.next()) {
+	        	return result.getString("enderchest_data");
+	        }
+	      } catch (SQLException e) {
+	        e.printStackTrace();
+	      } finally {
+				try {
+					if (result != null) {
+						result.close();
+					}
+					if (preparedUpdateStatement != null) {
+						preparedUpdateStatement.close();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		  }
 		return null;
 	}
 	
