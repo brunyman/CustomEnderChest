@@ -87,7 +87,7 @@ public class EnderChest extends JavaPlugin {
 		    	is19Server = false;
 		    	return true;
 		    }
-		    if (version.matches("1.13")) {
+		    if (version.matches("1.13") || version.matches("1.13.1")) {
 		    	is19Server = true;
 		    	is13Server = true;
 		    	return true;
