@@ -89,14 +89,7 @@ private EnderChest enderchest;
 							if (sender instanceof Player) {
 								p = (Player) sender;
 								if (p.hasPermission("CustomEnderChest.admin")) {
-									try {
-										enderchest.getConfig().load(new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"config.yml"));
-									} catch (Exception e) {
-										enderchest.getConfigHandler().printMessage(p, "chatMessages.reloadFail");
-										enderchest.getSoundHandler().sendFailedSound(p);
-										e.printStackTrace();
-										return true;
-									}
+									enderchest.getConfigHandler().loadConfig();
 									enderchest.getSoundHandler().sendCompleteSound(p);
 									enderchest.getConfigHandler().printMessage(p, "chatMessages.reload");
 									return true;
@@ -105,13 +98,7 @@ private EnderChest enderchest;
 								enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
 								return true;
 							} else {
-								try {
-									enderchest.getConfig().load(new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"config.yml"));
-								} catch (Exception e) {
-									sender.sendMessage(ChatColor.DARK_RED + "" + ChatColor.BOLD + ">> " + ChatColor.RED + "Could not load config! Check logs!");
-									e.printStackTrace();
-									return false;
-								}
+								enderchest.getConfigHandler().loadConfig();
 								sender.sendMessage(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + ">> " + ChatColor.GREEN + "Configuration reloaded!");
 								return true;
 							}

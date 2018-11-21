@@ -1,5 +1,5 @@
 # default config.yml for CustomEnderChest
-# config version 1.10.0
+# config version 1.10.1
 
 #Database settings
 database:
@@ -30,6 +30,8 @@ settings:
     modded-NBT-data-support: false
     #Disable click the enderchest to open the custom enderchest. (Useful if you only want to open it with the command)
     disable-enderchest-click: false
+    #Disable all sounds triggered by this plugin.
+    disable-sounds: false
 
 #Customize Ender Chest Title
 enderChestTitle:
