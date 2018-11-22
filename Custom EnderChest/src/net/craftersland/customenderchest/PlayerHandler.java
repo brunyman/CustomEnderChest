@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -74,29 +75,31 @@ public class PlayerHandler implements Listener {
 	}
 	
 	//Player click event
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(final PlayerInteractEvent e) {
 		if (e.getClickedBlock() != null) {
-			if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
-				if (enderchest.getConfigHandler().getBoolean("settings.disable-enderchest-click") == false) {
-					if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						if (interactCooldown.contains(e.getPlayer().getUniqueId()) == false) {
-							if (e.getPlayer().isSneaking() == false) {
-								e.setCancelled(true);
-								addInteractCooldown(e.getPlayer().getUniqueId());
-								enderchest.getEnderChestUtils().openMenu(e.getPlayer());
-							} else {
-								if (EnderChest.is19Server == false) {
-									if (hasItemInHand(e.getPlayer().getItemInHand()) == false) {
-										e.setCancelled(true);
-										addInteractCooldown(e.getPlayer().getUniqueId());
-										enderchest.getEnderChestUtils().openMenu(e.getPlayer());
-									}
+			if (e.isCancelled() == false) {
+				if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
+					if (enderchest.getConfigHandler().getBoolean("settings.disable-enderchest-click") == false) {
+						if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+							if (interactCooldown.contains(e.getPlayer().getUniqueId()) == false) {
+								if (e.getPlayer().isSneaking() == false) {
+									e.setCancelled(true);
+									addInteractCooldown(e.getPlayer().getUniqueId());
+									enderchest.getEnderChestUtils().openMenu(e.getPlayer());
 								} else {
-									if (hasItemInHand(e.getPlayer().getInventory().getItemInMainHand()) == false && hasItemInHand(e.getPlayer().getInventory().getItemInOffHand()) == false) {
-										e.setCancelled(true);
-										addInteractCooldown(e.getPlayer().getUniqueId());
-										enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+									if (EnderChest.is19Server == false) {
+										if (hasItemInHand(e.getPlayer().getItemInHand()) == false) {
+											e.setCancelled(true);
+											addInteractCooldown(e.getPlayer().getUniqueId());
+											enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+										}
+									} else {
+										if (hasItemInHand(e.getPlayer().getInventory().getItemInMainHand()) == false && hasItemInHand(e.getPlayer().getInventory().getItemInOffHand()) == false) {
+											e.setCancelled(true);
+											addInteractCooldown(e.getPlayer().getUniqueId());
+											enderchest.getEnderChestUtils().openMenu(e.getPlayer());
+										}
 									}
 								}
 							}
