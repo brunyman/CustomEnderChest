@@ -1,6 +1,6 @@
 name: CustomEnderChest
 main: net.craftersland.customenderchest.EnderChest
-version: 1.10.2
+version: 1.10.3
 author: CraftersLand
 website: www.craftersland.net
 load: STARTUP

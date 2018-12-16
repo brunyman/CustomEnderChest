@@ -1,5 +1,5 @@
 # default config.yml for CustomEnderChest
-# config version 1.10.2
+# config version 1.10.3
 
 #Database settings
 database:
@@ -77,7 +77,7 @@ chatMessages:
     flatfileImport-connection: '&dNo database connection found! Check logs and make sure the plugin is connected to the mysql database!'
     flatfileImport-started: '&dImport task started! Check server console for progress.'
     flatfileImport-datafolder: '&dThe PlayerData folder could not be found!'
-    reloadCmdBlocked: '&cServer reload is not good for plugins! For safety this command is blocked.'
+    reloadCmdWarning: '&cCustomEnderchest does not recommend server reloads. If you have issues after running this command stop using it.'
     
     #Help command with multi line support.
     Help:

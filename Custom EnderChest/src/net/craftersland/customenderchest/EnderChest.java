@@ -43,7 +43,6 @@ public class EnderChest extends JavaPlugin {
 	        configHandler = new ConfigHandler(this);
 	        checkForModdedNBTsupport();
 	        enderchestUtils = new EnderChestUtils(this);
-	        dH = new DataHandler();
 	        if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql") == true) {
 	        	log.info("Using MySQL database for data.");
 	        	mysqlSetup = new MysqlSetup(this);
@@ -56,6 +55,7 @@ public class EnderChest extends JavaPlugin {
 	        	}
 		      	storageInterface = new FlatFileStorage(this);	
 	        }
+	        dH = new DataHandler(this);
 	        sH = new SoundHandler(this);
 	        ftmc = new FileToMysqlCmd(this);
 	    	PluginManager pm = getServer().getPluginManager();
@@ -69,13 +69,16 @@ public class EnderChest extends JavaPlugin {
 		
 		//Disabling plugin
 		public void onDisable() {
-			HandlerList.unregisterAll(this);
 			Bukkit.getScheduler().cancelTasks(this);
 			if (configHandler.getString("database.typeOfDatabase").equalsIgnoreCase("mysql")) {
 				if (mysqlSetup.getConnection() != null) {
+					log.info("Closing database connection...");
 					mysqlSetup.closeDatabase();
 				}
 			}
+			log.info("Cleaning internal data...");
+			dH.clearLiveData();
+			HandlerList.unregisterAll(this);
 			log.info(pluginName + " is disabled!");
 		}
 		

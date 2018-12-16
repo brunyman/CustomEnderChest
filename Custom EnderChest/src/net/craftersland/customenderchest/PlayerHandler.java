@@ -32,17 +32,15 @@ public class PlayerHandler implements Listener {
 	@EventHandler
 	public void onCmd(ServerCommandEvent event) {
 		if (event.getCommand().matches("reload")) {
-			event.setCancelled(true);
-			event.getSender().sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.reloadCmdBlocked"));
+			event.getSender().sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.reloadCmdWarning"));
 		}
 	}
 	
 	@EventHandler
 	public void onCmd(PlayerCommandPreprocessEvent event) {
 		if (event.getMessage().matches("/reload")) {
-			event.setCancelled(true);
-			enderchest.getSoundHandler().sendFailedSound(event.getPlayer());
-			event.getPlayer().sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.reloadCmdBlocked"));
+			enderchest.getSoundHandler().sendAnvilLandSound(event.getPlayer());
+			event.getPlayer().sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.reloadCmdWarning"));
 		}
 	}
 	
@@ -52,18 +50,7 @@ public class PlayerHandler implements Listener {
 
 			@Override
 			public void run() {
-				if (e.getPlayer().isOnline() == true) {
-					int size = enderchest.getEnderChestUtils().getSize(e.getPlayer());
-					if (size == 0) {
-						size = 9;
-					}
-					String enderChestTitle = enderchest.getEnderChestUtils().getTitle(e.getPlayer());
-					Inventory inv = Bukkit.getServer().createInventory(e.getPlayer(), size, enderChestTitle);
-					if (enderchest.getStorageInterface().hasDataFile(e.getPlayer().getUniqueId()) == true) {
-						enderchest.getStorageInterface().loadEnderChest(e.getPlayer(), inv);
-					}
-					enderchest.getDataHandler().setData(e.getPlayer().getUniqueId(), inv);
-				}
+				enderchest.getDataHandler().loadPlayerFromStorage(e.getPlayer());
 			}
 			
 		});
