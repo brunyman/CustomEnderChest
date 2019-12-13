@@ -104,6 +104,7 @@ public class FlatFileStorage implements StorageInterface {
 			File dataFile = new File("plugins"+System.getProperty("file.separator")+"CustomEnderChest"+System.getProperty("file.separator")+"PlayerData", p.getUniqueId() + ".yml");
 			if (dataFile.exists()) {
 				int storageSize = loadSize(p.getUniqueId());
+				if (storageSize == 0) return false;
 				Inventory storageInv = Bukkit.getServer().createInventory(null, storageSize);
 				FileConfiguration ymlFormat = YamlConfiguration.loadConfiguration(dataFile);
 				ArrayList<ItemStack> items = new ArrayList<ItemStack>();

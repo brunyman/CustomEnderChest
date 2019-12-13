@@ -88,6 +88,27 @@ public class EnderChest extends JavaPlugin {
 		    
 		    if (version.matches("1.7.10") || version.matches("1.7.9") || version.matches("1.7.5") || version.matches("1.7.2") || version.matches("1.8.8") || version.matches("1.8.3") || version.matches("1.8.4") || version.matches("1.8")) {
 		    	is19Server = false;
+		    	is13Server = false;
+		    	log.info("Compatible server version detected: " + version);
+		    	return true;
+		    } else if (version.matches("1.9") || version.matches("1.9.1") || version.matches("1.9.2") || version.matches("1.9.3") || version.matches("1.9.4")) {
+		    	is19Server = true;
+		    	is13Server = false;
+		    	log.info("Compatible server version detected: " + version);
+		    	return true;
+		    } else if (version.matches("1.10") || version.matches("1.10.1") || version.matches("1.10.2")) {
+		    	is19Server = true;
+		    	is13Server = false;
+		    	log.info("Compatible server version detected: " + version);
+		    	return true;
+		    } else if (version.matches("1.11") || version.matches("1.11.1") || version.matches("1.11.2")) {
+		    	is19Server = true;
+		    	is13Server = false;
+		    	log.info("Compatible server version detected: " + version);
+		    	return true;
+		    } else if (version.matches("1.12") || version.matches("1.12.1") || version.matches("1.12.2")) {
+		    	is19Server = true;
+		    	is13Server = false;
 		    	log.info("Compatible server version detected: " + version);
 		    	return true;
 		    } else if (version.matches("1.13") || version.matches("1.13.1") || version.matches("1.13.2")) {
@@ -100,11 +121,16 @@ public class EnderChest extends JavaPlugin {
 		    	is13Server = true;
 		    	log.info("Compatible server version detected: " + version);
 		    	return true;
-		    } else {
-		    	//Default fallback to 1.14 API
+		    } else if (version.matches("1.15")) {
 		    	is19Server = true;
 		    	is13Server = true;
-		    	log.info("Incompatible server version detected: " + version + " . Running into 1.14 API mode.");
+		    	log.info("Compatible server version detected: " + version);
+		    	return true;
+		    } else {
+		    	//Default fallback to 1.15 API
+		    	is19Server = true;
+		    	is13Server = true;
+		    	log.info("Incompatible server version detected: " + version + " . Running into 1.15 API mode.");
 		    }
 		    return false;
 		}
