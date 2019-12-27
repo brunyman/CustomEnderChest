@@ -1,5 +1,5 @@
 # default config.yml for CustomEnderChest
-# config version 1.12.0
+# config version 1.12.1
 
 #Database settings
 database:
@@ -78,6 +78,7 @@ chatMessages:
     flatfileImport-started: '&dImport task started! Check server console for progress.'
     flatfileImport-datafolder: '&dThe PlayerData folder could not be found!'
     reloadCmdWarning: '&cCustomEnderchest does not recommend server reloads. If you have issues after running this command stop using it.'
+    joinDelay: '&cYour data is loading, please wait...'
     
     #Help command with multi line support.
     Help:

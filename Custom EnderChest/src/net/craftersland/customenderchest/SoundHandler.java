@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 
 public class SoundHandler {
 	
-	@SuppressWarnings("unused")
 	private EnderChest pl;
 	
 	public SoundHandler(EnderChest pl) {

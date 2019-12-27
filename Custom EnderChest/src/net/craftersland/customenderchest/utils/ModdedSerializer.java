@@ -11,10 +11,10 @@ import net.craftersland.customenderchest.EnderChest;
 
 public class ModdedSerializer {
 	
-	private EnderChest pl;
+	//private EnderChest pl;
 	
 	public ModdedSerializer(EnderChest pl) {
-		this.pl = pl;
+		//this.pl = pl;
 	}
 	
 	public String toBase64(ItemStack[] itemStacks) throws IOException {
@@ -35,7 +35,11 @@ public class ModdedSerializer {
 	    ItemStack[] itemStacks = new ItemStack[strings.length];
 	    for (int i = 0; i < strings.length; i++) {
 	      if (!strings[i].equals("")) {
-	    	  itemStacks[i] = StreamSerializer.getDefault().deserializeItemStack(strings[i]);
+	    	  try {
+	    		  itemStacks[i] = StreamSerializer.getDefault().deserializeItemStack(strings[i]);
+	    	  } catch (Exception e) {
+	    		  EnderChest.log.warning("Error decoding item using ProtocolLib, Error: " + e.getMessage());
+	    	  }
 	      }
 	    }
 	    return itemStacks;

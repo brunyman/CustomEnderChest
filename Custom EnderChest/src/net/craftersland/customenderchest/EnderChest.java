@@ -121,7 +121,7 @@ public class EnderChest extends JavaPlugin {
 		    	is13Server = true;
 		    	log.info("Compatible server version detected: " + version);
 		    	return true;
-		    } else if (version.matches("1.15")) {
+		    } else if (version.matches("1.15") || version.matches("1.15.1")) {
 		    	is19Server = true;
 		    	is13Server = true;
 		    	log.info("Compatible server version detected: " + version);

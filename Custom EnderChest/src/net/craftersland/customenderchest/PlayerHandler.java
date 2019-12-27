@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack;
 public class PlayerHandler implements Listener {
 	
     private EnderChest enderchest;
-    private Set<UUID> interactCooldown = new HashSet<UUID>();
+    private Set<Player> interactCooldown = new HashSet<Player>();
 	
 	public PlayerHandler(EnderChest enderchest) {
 		this.enderchest = enderchest;
@@ -46,18 +46,21 @@ public class PlayerHandler implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoinEvent(final PlayerJoinEvent e) {
-		Bukkit.getScheduler().runTaskAsynchronously(enderchest, new Runnable() {
+		enderchest.getDataHandler().addJoinDelay(e.getPlayer());
+		Bukkit.getScheduler().runTaskLaterAsynchronously(enderchest, new Runnable() {
 
 			@Override
 			public void run() {
 				enderchest.getDataHandler().loadPlayerFromStorage(e.getPlayer());
+				enderchest.getDataHandler().removeJoinDelay(e.getPlayer());
 			}
 			
-		});
+		}, 20L *2);
 	}
 	
 	@EventHandler
 	public void onPlayerDisconnectEvent(PlayerQuitEvent e) {
+		enderchest.getDataHandler().removeJoinDelay(e.getPlayer());
 		enderchest.getDataHandler().removeData(e.getPlayer().getUniqueId());
 	}
 	
@@ -69,27 +72,34 @@ public class PlayerHandler implements Listener {
 				if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 					if (enderchest.getConfigHandler().getBoolean("settings.disable-enderchest-click") == false) {
 						if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-							if (interactCooldown.contains(e.getPlayer().getUniqueId()) == false) {
+							if (enderchest.getDataHandler().hasJoinDelay(e.getPlayer())) {
+								e.setCancelled(true);
+								e.getPlayer().sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.prefix") + enderchest.getConfigHandler().getStringWithColor("chatMessages.joinDelay"));
+								enderchest.getSoundHandler().sendFailedSound(e.getPlayer());
+								return;
+							}
+							if (interactCooldown.contains(e.getPlayer()) == false) {
 								if (e.getPlayer().isSneaking() == false) {
-									e.setCancelled(true);
-									addInteractCooldown(e.getPlayer().getUniqueId());
+									//e.setCancelled(true);
+									addInteractCooldown(e.getPlayer());
 									enderchest.getEnderChestUtils().openMenu(e.getPlayer());
 								} else {
 									if (EnderChest.is19Server == false) {
 										if (hasItemInHand(e.getPlayer().getItemInHand()) == false) {
-											e.setCancelled(true);
-											addInteractCooldown(e.getPlayer().getUniqueId());
+											//e.setCancelled(true);
+											addInteractCooldown(e.getPlayer());
 											enderchest.getEnderChestUtils().openMenu(e.getPlayer());
 										}
 									} else {
 										if (hasItemInHand(e.getPlayer().getInventory().getItemInMainHand()) == false && hasItemInHand(e.getPlayer().getInventory().getItemInOffHand()) == false) {
-											e.setCancelled(true);
-											addInteractCooldown(e.getPlayer().getUniqueId());
+											//e.setCancelled(true);
+											addInteractCooldown(e.getPlayer());
 											enderchest.getEnderChestUtils().openMenu(e.getPlayer());
 										}
 									}
 								}
 							}
+							e.setCancelled(true);
 						}
 					}
 				}
@@ -97,16 +107,16 @@ public class PlayerHandler implements Listener {
 		}
 	}
 	
-	private void addInteractCooldown(final UUID u) {
-		interactCooldown.add(u);
+	private void addInteractCooldown(final Player p) {
+		interactCooldown.add(p);
 		Bukkit.getScheduler().runTaskLaterAsynchronously(enderchest, new Runnable() {
 
 			@Override
 			public void run() {
-				interactCooldown.remove(u);
+				interactCooldown.remove(p);
 			}
 			
-		}, 2L);
+		}, 20L);
 	}
 	
 	private boolean hasItemInHand(ItemStack item) {

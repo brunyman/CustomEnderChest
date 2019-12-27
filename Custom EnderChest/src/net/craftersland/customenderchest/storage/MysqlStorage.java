@@ -106,7 +106,6 @@ public class MysqlStorage implements StorageInterface {
 		}*/
 		PreparedStatement preparedUpdateStatement = null;
 		int storageSize = loadSize(uuid);
-		Inventory storageInv = decodeInventory(getEnderchestString(uuid), null, storageSize);
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `enderchest_data` = ?" + ", `size` = ?" + " WHERE `player_uuid` = ?";
 			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
@@ -114,6 +113,7 @@ public class MysqlStorage implements StorageInterface {
 				preparedUpdateStatement.setString(1, encodeInventory(endInv, uuid.toString()));
 				preparedUpdateStatement.setInt(2, endInv.getSize());
 			} else {
+				Inventory storageInv = decodeInventory(getEnderchestString(uuid), null, storageSize);
 				for (int i = 0; i < endInv.getSize(); i++) {
 					storageInv.setItem(i, endInv.getItem(i));
 				}
@@ -169,7 +169,6 @@ public class MysqlStorage implements StorageInterface {
 		}
 		PreparedStatement preparedUpdateStatement = null;
 		int storageSize = loadSize(p.getUniqueId());
-		Inventory storageInv = decodeInventory(getEnderchestString(p.getUniqueId()), p.getDisplayName(), storageSize);
 		try {        	
 			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `player_name` = ?" + ", `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_uuid` = ?";
 			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
@@ -178,8 +177,13 @@ public class MysqlStorage implements StorageInterface {
 				preparedUpdateStatement.setString(2, encodeInventory(endInv, p.getName()));
 				preparedUpdateStatement.setInt(3, endInv.getSize());
 			} else {
+				Inventory storageInv = decodeInventory(getEnderchestString(p.getUniqueId()), p.getDisplayName(), storageSize);
+				//EnderChest.log.warning("Debug - 1 - " + endInv.getSize() + " - " + storageInv.getSize() + " - " + storageSize);
 				for (int i = 0; i < endInv.getSize(); i++) {
-					storageInv.setItem(i, endInv.getItem(i));
+					ItemStack item = endInv.getItem(i);
+					if (item != null) {
+						storageInv.setItem(i, item);
+					} 
 				}
 				preparedUpdateStatement.setString(2, encodeInventory(storageInv, p.getName()));
 				preparedUpdateStatement.setInt(3, storageSize);
@@ -292,7 +296,14 @@ public class MysqlStorage implements StorageInterface {
 			try {
 				ItemStack[] items = enderchest.getModdedSerializer().fromBase64(rawData);
 				Inventory inv = Bukkit.getServer().createInventory(null, chestSize);
-				inv.setContents(items);
+				if (chestSize > items.length) {
+					inv.setContents(items);
+				} else {
+					for (int i=0; i<chestSize; i++) {
+						inv.addItem(items[i]);
+					}
+				}
+				
 				return inv;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -308,10 +319,34 @@ public class MysqlStorage implements StorageInterface {
 				return EncodingUtil.fromBase64(rawData);
 			} catch (Exception e) {
 				EnderChest.log.severe("Failed to decode inventory for " + playerName + "! Error: " + e.getMessage());
-				e.printStackTrace();
+				//TODO
+				saveEnderchest(playerName, chestSize);
 			}
 		}
 		return null;
+	}
+	
+	private void saveEnderchest(String playerName, int chestSize) {
+		PreparedStatement preparedUpdateStatement = null;
+		try {        	
+			String updateSqlExp = "UPDATE `" + enderchest.getConfigHandler().getString("database.mysql.tableName") + "` " + "SET `enderchest_data` = ?" + ", `size` = ?" + ", `last_seen` = ?" + " WHERE `player_name` = ?";
+			preparedUpdateStatement = enderchest.getMysqlSetup().getConnection().prepareStatement(updateSqlExp);
+			preparedUpdateStatement.setString(1, encodeInventory(Bukkit.getServer().createInventory(null, chestSize), playerName));
+			preparedUpdateStatement.setInt(2, chestSize);
+			preparedUpdateStatement.setString(3, String.valueOf(System.currentTimeMillis()));
+			preparedUpdateStatement.setString(4, playerName);
+			preparedUpdateStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (preparedUpdateStatement != null) {
+					preparedUpdateStatement.close();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	    }
 	}
 	
 	private String encodeInventory(Inventory inv, String playerName) {

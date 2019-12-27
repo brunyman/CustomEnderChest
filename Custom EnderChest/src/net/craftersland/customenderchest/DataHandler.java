@@ -1,7 +1,9 @@
 package net.craftersland.customenderchest;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -11,11 +13,24 @@ import org.bukkit.inventory.Inventory;
 public class DataHandler {
 	
 	private Map<UUID, Inventory> liveData = new HashMap<UUID, Inventory>();
+	private Set<Player> joinDelay = new HashSet<Player>();
 	private EnderChest pl;
 	
 	public DataHandler(EnderChest plugin) {
 		this.pl = plugin;
 		loadAlreadyOnlinePlayers();
+	}
+	
+	public void addJoinDelay(Player p) {
+		joinDelay.add(p);
+	}
+	
+	public void removeJoinDelay(Player p) {
+		joinDelay.remove(p);
+	}
+	
+	public boolean hasJoinDelay(Player p) {
+		return joinDelay.contains(p);
 	}
 	
 	public Inventory getData(UUID playerUUID) {

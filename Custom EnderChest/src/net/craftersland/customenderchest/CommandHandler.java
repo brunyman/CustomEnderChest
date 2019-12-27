@@ -1,6 +1,5 @@
 package net.craftersland.customenderchest;
 
-import java.io.File;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -41,6 +40,11 @@ private EnderChest enderchest;
 									int size = enderchest.getEnderChestUtils().getSize(p);
 									if (size == 0) {
 										enderchest.getConfigHandler().printMessage(p, "chatMessages.noPermission");
+										enderchest.getSoundHandler().sendFailedSound(p);
+										return false;
+									}
+									if (enderchest.getDataHandler().hasJoinDelay(p)) {
+										p.sendMessage(enderchest.getConfigHandler().getStringWithColor("chatMessages.prefix") + enderchest.getConfigHandler().getStringWithColor("chatMessages.joinDelay"));
 										enderchest.getSoundHandler().sendFailedSound(p);
 										return false;
 									}
