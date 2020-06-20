@@ -296,11 +296,13 @@ public class MysqlStorage implements StorageInterface {
 			try {
 				ItemStack[] items = enderchest.getModdedSerializer().fromBase64(rawData);
 				Inventory inv = Bukkit.getServer().createInventory(null, chestSize);
-				if (chestSize > items.length) {
+				if (chestSize >= items.length) {
 					inv.setContents(items);
 				} else {
 					for (int i=0; i<chestSize; i++) {
-						inv.addItem(items[i]);
+						if (items[i] != null) {
+							inv.addItem(items[i]);
+						}
 					}
 				}
 				
