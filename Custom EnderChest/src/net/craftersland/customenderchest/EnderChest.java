@@ -126,11 +126,16 @@ public class EnderChest extends JavaPlugin {
 		    	is13Server = true;
 		    	log.info("Compatible server version detected: " + version);
 		    	return true;
+		    } else if (version.matches("1.16") || version.matches("1.16.1")) {
+		    	is19Server = true;
+		    	is13Server = true;
+		    	log.info("Compatible server version detected: " + version);
+		    	return true;
 		    } else {
 		    	//Default fallback to 1.15 API
 		    	is19Server = true;
 		    	is13Server = true;
-		    	log.info("Incompatible server version detected: " + version + " . Running into 1.15 API mode.");
+		    	log.info("Incompatible server version detected: " + version + " . Running into 1.16 API mode.");
 		    }
 		    return false;
 		}
