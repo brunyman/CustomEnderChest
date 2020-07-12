@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import de.jeff_media.ChestSort.Sortable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -60,7 +61,12 @@ public class DataHandler {
 				size = 9;
 			}
 			String enderChestTitle = pl.getEnderChestUtils().getTitle(p);
-			Inventory inv = Bukkit.getServer().createInventory(p, size, enderChestTitle);
+
+			// Add ChestSort support
+			Sortable holder = new Sortable(p);
+			Inventory inv = Bukkit.getServer().createInventory(holder, size, enderChestTitle);
+			holder.setInventory(inv);
+
 			if (pl.getStorageInterface().hasDataFile(p.getUniqueId()) == true) {
 				pl.getStorageInterface().loadEnderChest(p, inv);
 			}

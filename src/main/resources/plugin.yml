@@ -1,10 +1,10 @@
 name: CustomEnderChest
 main: net.craftersland.customenderchest.EnderChest
-version: 1.13.0
+version: 1.13.1
 author: CraftersLand
 website: www.craftersland.net
 load: STARTUP
-softdepend: [ProtocolLib]
+softdepend: [ProtocolLib, ChestSort]
 api-version: 1.13
 commands:
     ec:
